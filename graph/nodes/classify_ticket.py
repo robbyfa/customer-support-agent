@@ -1,4 +1,4 @@
-"""Node: classify_ticket — classifies a customer message into a structured
+"""Node: classify_ticket - classifies a customer message into a structured
 TicketClassification and extracts the customer ID if present.
 """
 

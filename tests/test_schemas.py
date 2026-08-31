@@ -1,7 +1,7 @@
 """Tests for Pydantic schema models.
 
 Covers instantiation, Literal validation, optional fields, and serialization.
-No LLM calls — these are pure unit tests.
+No LLM calls - these are pure unit tests.
 """
 
 import pytest

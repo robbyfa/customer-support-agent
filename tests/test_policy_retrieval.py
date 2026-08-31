@@ -136,3 +136,87 @@ class TestReset:
         vs.reset()
         results_after = vs.search("withdrawal", n_results=1)
         assert len(results_after) == 0
+
+
+# ===========================================================================
+# retrieve_policy node tests (Task 6)
+# ===========================================================================
+
+from tools.registry import configure
+from graph.nodes.retrieve_policy import retrieve_policy
+
+
+@pytest.fixture(scope="module")
+def _configure_registry(store: PolicyVectorStore):
+    """Register the shared store so the node can find it."""
+    configure(store)
+
+
+@pytest.mark.usefixtures("_configure_registry")
+class TestRetrievePolicyNode:
+    def test_withdrawal_issue_returns_withdrawal_policy(self):
+        state = {
+            "classification": {
+                "category": "withdrawal_issue",
+                "summary": "Customer reports multiple failed withdrawal attempts.",
+            },
+            "audit_trail": [],
+        }
+        result = retrieve_policy(state)
+
+        assert "policy_context" in result
+        assert len(result["policy_context"]) > 0
+        # At least one chunk should come from the withdrawal policy
+        combined = " ".join(result["policy_context"]).lower()
+        assert "withdrawal" in combined
+
+    def test_responsible_gaming_returns_responsible_gaming_policy(self):
+        state = {
+            "classification": {
+                "category": "responsible_gaming",
+                "summary": "Customer requests self-exclusion period.",
+            },
+            "audit_trail": [],
+        }
+        result = retrieve_policy(state)
+
+        combined = " ".join(result["policy_context"]).lower()
+        assert "self-exclusion" in combined or "responsible gaming" in combined
+
+    def test_audit_trail_appended(self):
+        state = {
+            "classification": {
+                "category": "deposit_issue",
+                "summary": "Deposit not credited.",
+            },
+            "audit_trail": [{"step": "classify_ticket"}],
+        }
+        result = retrieve_policy(state)
+
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        assert trail[1]["step"] == "retrieve_policy"
+        assert "sources" in trail[1]
+        assert "chunks_retrieved" in trail[1]
+
+    def test_empty_classification_still_returns_results(self):
+        state = {
+            "classification": {},
+            "audit_trail": [],
+        }
+        result = retrieve_policy(state)
+        # Should fall back to a generic query and still return chunks
+        assert len(result["policy_context"]) > 0
+
+    def test_policy_context_contains_strings(self):
+        state = {
+            "classification": {
+                "category": "login_issue",
+                "summary": "Account locked after failed logins.",
+            },
+            "audit_trail": [],
+        }
+        result = retrieve_policy(state)
+        for chunk in result["policy_context"]:
+            assert isinstance(chunk, str)
+            assert len(chunk) > 0

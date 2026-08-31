@@ -74,15 +74,15 @@
 - [x] Add chain/node tests in `tests/test_graph.py` - "failed withdrawal" → withdrawal_issue/high/negative, "can't log in" → login_issue
 - [x] Verify: `uv run pytest tests/test_schemas.py tests/test_graph.py -v` passes
 
-### Task 6: Component - retrieve_policy
+### Task 6: Component - retrieve_policy ✅
 
 **Node:**
-- [ ] Create `graph/nodes/retrieve_policy.py` - `def retrieve_policy(state) -> dict` returning policy_context, audit_trail
-- [ ] Update `graph/nodes/__init__.py` - export retrieve_policy
+- [x] Create `graph/nodes/retrieve_policy.py` - `def retrieve_policy(state) -> dict` returning policy_context, audit_trail
+- [x] Update `graph/nodes/__init__.py` - export retrieve_policy
 
 **Tests:**
-- [ ] Extend `tests/test_policy_retrieval.py` - test node with withdrawal_issue state → withdrawal_policy.md content, responsible_gaming state → responsible_gaming_policy.md content
-- [ ] Verify: `uv run pytest tests/test_policy_retrieval.py -v` passes
+- [x] Extend `tests/test_policy_retrieval.py` - test node with withdrawal_issue state → withdrawal_policy.md content, responsible_gaming state → responsible_gaming_policy.md content
+- [x] Verify: `uv run pytest tests/test_policy_retrieval.py -v` passes
 
 ### Task 7: Component - customer_context
 

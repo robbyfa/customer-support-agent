@@ -165,17 +165,17 @@
 - [x] Run each scenario through `app.invoke()` and pretty-print
 - [x] Verify: `uv run python main.py` runs all 6 scenarios successfully
 
-### Task 13: Streamlit UI
+### Task 13: Streamlit UI ✅
 
-- [ ] Create `app.py` with session state management (`init_session_state()`)
-- [ ] Setup functions: `setup_stores()`, `setup_agent()`
-- [ ] Sidebar: customer selector dropdown, customer profile display, 6 demo scenario buttons, suggested questions
-- [ ] Main area: message input + "Run Copilot" button
-- [ ] Results display: classification badges, policy evidence expander, customer context expander, risk assessment, recommendation, draft response
-- [ ] Approval section: Approve/Reject `st.button` pair when approval_required
-- [ ] Audit trail expander
-- [ ] Custom CSS for badges and styling
-- [ ] Verify: `uv run streamlit run app.py` - interactive demo works end-to-end
+- [x] Create `app.py` with session state management (`init_session_state()`)
+- [x] Setup functions: `setup_stores()`, `setup_agent()`
+- [x] Sidebar: customer selector dropdown, customer profile display, 6 demo scenario buttons, suggested questions
+- [x] Main area: message input + "Run Copilot" button
+- [x] Results display: classification badges, policy evidence expander, customer context expander, risk assessment, recommendation, draft response
+- [x] Approval section: Approve/Reject `st.button` pair when approval_required
+- [x] Audit trail expander
+- [x] Custom CSS for badges and styling
+- [x] Verify: `uv run streamlit run app.py` - interactive demo works end-to-end
 
 ---
 
@@ -236,6 +236,6 @@
 |-------|-------|--------|
 | Phase 0 - Foundation | Tasks 1–4 | ✅ Complete |
 | Phase 1 - Components | Tasks 5–10 | ✅ Complete |
-| Phase 2 - Integration | Tasks 11–13 | ⬜ Not started |
+| Phase 2 - Integration | Tasks 11–13 | ✅ Complete |
 | Phase 3 - Evaluation | Task 14 | ⬜ Not started |
 | Phase 4 - Polish | Tasks 15–18 | ⬜ Not started |

@@ -1,4 +1,4 @@
-"""Node: draft_response — generates a draft customer-facing response and
+"""Node: draft_response - generates a draft customer-facing response and
 an internal support recommendation using the response chain.
 """
 
@@ -39,7 +39,7 @@ def draft_response(state: GraphState) -> dict[str, Any]:
     draft = result.model_dump()
 
     recommendation = SupportRecommendation(
-        recommended_action=draft["customer_message"][:200],
+        recommended_action=draft["customer_message"],
         reason=(
             f"Based on {classification.get('category', 'unknown')} classification "
             f"and risk level {risk_assessment.get('risk_level', 'unknown')}"

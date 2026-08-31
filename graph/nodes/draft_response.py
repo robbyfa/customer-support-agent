@@ -1,4 +1,4 @@
-"""Node: draft_response - generates a draft customer-facing response and
+"""Node: draft_response — generates a draft customer-facing response and
 an internal support recommendation using the response chain.
 """
 
@@ -8,6 +8,7 @@ from typing import Any
 
 from graph.chains.response_generator import get_response_chain
 from graph.state import GraphState
+from models.recommendation import SupportRecommendation
 
 
 def draft_response(state: GraphState) -> dict[str, Any]:
@@ -16,7 +17,7 @@ def draft_response(state: GraphState) -> dict[str, Any]:
     Feeds full context (message, classification, policy, customer, risk)
     into the response chain and returns:
     - draft_response: dict representation of DraftResponse
-    - recommendation: dict with action, reason, sources, etc.
+    - recommendation: dict representation of SupportRecommendation
     - audit_trail: appended entry
     """
     classification = state.get("classification", {})
@@ -37,14 +38,16 @@ def draft_response(state: GraphState) -> dict[str, Any]:
 
     draft = result.model_dump()
 
-    # Build recommendation from the combined context
-    recommendation = {
-        "recommended_action": draft["customer_message"][:200],
-        "reason": f"Based on {classification.get('category', 'unknown')} classification and risk level {risk_assessment.get('risk_level', 'unknown')}",
-        "relevant_policy_sources": _extract_sources(policy_context),
-        "missing_information": [],
-        "human_review_required": risk_assessment.get("requires_human_review", False),
-    }
+    recommendation = SupportRecommendation(
+        recommended_action=draft["customer_message"][:200],
+        reason=(
+            f"Based on {classification.get('category', 'unknown')} classification "
+            f"and risk level {risk_assessment.get('risk_level', 'unknown')}"
+        ),
+        relevant_policy_sources=_extract_sources(policy_context),
+        missing_information=[],
+        human_review_required=risk_assessment.get("requires_human_review", False),
+    )
 
     audit_entry = {
         "step": "draft_response",
@@ -55,15 +58,13 @@ def draft_response(state: GraphState) -> dict[str, Any]:
 
     return {
         "draft_response": draft,
-        "recommendation": recommendation,
+        "recommendation": recommendation.model_dump(),
         "audit_trail": state.get("audit_trail", []) + [audit_entry],
     }
 
 
 def _extract_sources(policy_context: list[str]) -> list[str]:
     """Best-effort extraction of source filenames from policy chunks."""
-    # Policy chunks don't carry metadata at this layer, so we return
-    # a placeholder indicating policy was used.
     if policy_context:
         return ["policy_documents"]
     return []

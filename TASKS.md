@@ -157,11 +157,13 @@
 
 ### Task 12: CLI entry point (main.py)
 
-- [ ] Create `main.py` - load dotenv, setup stores, ingest policies, configure tools
-- [ ] Define 6 demo scenarios (one per issue type)
-- [ ] Create `render_copilot_response()` for formatted terminal output
-- [ ] Run each scenario through `app.invoke()` and pretty-print
-- [ ] Verify: `uv run python main.py` runs all 6 scenarios successfully
+### Task 12: CLI entry point (main.py) ✅
+
+- [x] Create `main.py` - load dotenv, setup stores, ingest policies, configure tools
+- [x] Define 6 demo scenarios (one per issue type)
+- [x] Create `render_copilot_response()` for formatted terminal output
+- [x] Run each scenario through `app.invoke()` and pretty-print
+- [x] Verify: `uv run python main.py` runs all 6 scenarios successfully
 
 ### Task 13: Streamlit UI
 

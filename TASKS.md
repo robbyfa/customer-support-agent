@@ -232,7 +232,7 @@
 
 | Phase | Tasks | Status |
 |-------|-------|--------|
-| Phase 0 — Foundation | Tasks 1–4 | ⬜ Not started |
+| Phase 0 — Foundation | Tasks 1–4 | 🟡 In progress (Tasks 1–2 done) |
 | Phase 1 — Components | Tasks 5–10 | ⬜ Not started |
 | Phase 2 — Integration | Tasks 11–13 | ⬜ Not started |
 | Phase 3 — Evaluation | Task 14 | ⬜ Not started |

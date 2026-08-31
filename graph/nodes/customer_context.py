@@ -1,25 +1,22 @@
 """Node: customer_context - aggregates customer profile, transactions,
-tickets, and bonus data into a single context dict.
+tickets, and bonus data via the MCP server.
+
+Uses the MCP client to call tools on the Customer Support MCP Server
+instead of importing storage functions directly.
 """
 
 from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
-from storage.mock_data import (
-    get_customer,
-    get_customer_bonus,
-    get_customer_tickets,
-    get_customer_transactions,
-)
+from mcp_server.client import call_mcp_tool_sync
 
 
 def get_customer_context(state: GraphState) -> dict[str, Any]:
-    """Build a comprehensive customer context from mock data.
+    """Build a comprehensive customer context via MCP tool calls.
 
-    Reads ``customer_id`` from state and returns:
-    - customer_context: dict with profile, transactions, tickets, bonus, flags
-    - audit_trail: appended entry for this step
+    Calls the MCP server's tools for profile, transactions, tickets,
+    and bonuses, then assembles flags for downstream nodes.
     """
     customer_id = state.get("customer_id")
 
@@ -31,27 +28,34 @@ def get_customer_context(state: GraphState) -> dict[str, Any]:
                     "step": "customer_context",
                     "timestamp": datetime.now(UTC).isoformat(),
                     "error": "No customer_id provided",
+                    "source": "mcp",
                 }
             ],
         }
 
-    profile = get_customer(customer_id)
+    # Call MCP tools
+    profile = call_mcp_tool_sync("get_customer_profile", {"customer_id": customer_id})
 
-    if profile is None:
+    if isinstance(profile, dict) and "error" in profile:
         return {
-            "customer_context": {"error": f"Customer {customer_id} not found"},
+            "customer_context": {"error": profile["error"]},
             "audit_trail": state.get("audit_trail", []) + [
                 {
                     "step": "customer_context",
                     "timestamp": datetime.now(UTC).isoformat(),
-                    "error": f"Customer {customer_id} not found",
+                    "error": profile["error"],
+                    "source": "mcp",
                 }
             ],
         }
 
-    transactions = get_customer_transactions(customer_id)
-    tickets = get_customer_tickets(customer_id)
-    bonuses = get_customer_bonus(customer_id)
+    txn_result = call_mcp_tool_sync("get_recent_transactions", {"customer_id": customer_id})
+    ticket_result = call_mcp_tool_sync("get_ticket_history", {"customer_id": customer_id})
+    bonus_result = call_mcp_tool_sync("get_bonus_status", {"customer_id": customer_id})
+
+    transactions = txn_result.get("transactions", []) if isinstance(txn_result, dict) else []
+    tickets = ticket_result.get("tickets", []) if isinstance(ticket_result, dict) else []
+    bonuses = bonus_result.get("bonus_history", []) if isinstance(bonus_result, dict) else []
 
     failed_withdrawals = [
         t for t in transactions
@@ -80,6 +84,7 @@ def get_customer_context(state: GraphState) -> dict[str, Any]:
         "step": "customer_context",
         "timestamp": datetime.now(UTC).isoformat(),
         "customer_id": customer_id,
+        "source": "mcp",
         "transactions_found": len(transactions),
         "tickets_found": len(tickets),
         "bonuses_found": len(bonuses),

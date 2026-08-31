@@ -13,6 +13,8 @@ dependencies = [
     "chromadb>=0.5.0",
     "streamlit>=1.38.0",
     "python-dotenv>=1.0.0",
+    "mcp>=1.29.1",
+    "langchain-mcp-adapters>=0.3.2",
 ]
 
 [dependency-groups]
@@ -32,6 +34,6 @@ line-length = 120
 
 [tool.ruff.lint]
 ignore = [
-    "ISC004",  # Implicit string concatenation in tuples — intentional for LangChain prompts
-    "BLE001",  # Broad exception catch — acceptable in eval runner
+    "ISC004",  # Implicit string concatenation in tuples - intentional for LangChain prompts
+    "BLE001",  # Broad exception catch - acceptable in eval runner
 ]

@@ -1,24 +1,20 @@
 """Node: minimal_customer_context - lightweight customer context for
-sensitive cases (responsible gaming, etc.).
+sensitive cases via MCP.
 
-Only fetches the profile and risk flags - no transactions, tickets, or
-bonuses - to fast-track sensitive cases while still having enough context
-for risk assessment and response generation.
+Only fetches the profile (no transactions, tickets, or bonuses) to
+fast-track sensitive cases while still having enough context for
+risk assessment and response generation.
 """
 
 from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
-from storage.mock_data import get_customer
+from mcp_server.client import call_mcp_tool_sync
 
 
 def get_minimal_customer_context(state: GraphState) -> dict[str, Any]:
-    """Build a minimal customer context with profile and flags only.
-
-    Used for sensitive cases where the priority is speed and safety,
-    not deep transaction analysis.
-    """
+    """Build a minimal customer context via MCP - profile and flags only."""
     customer_id = state.get("customer_id")
 
     if not customer_id:
@@ -29,20 +25,22 @@ def get_minimal_customer_context(state: GraphState) -> dict[str, Any]:
                     "step": "minimal_customer_context",
                     "timestamp": datetime.now(UTC).isoformat(),
                     "error": "No customer_id provided",
+                    "source": "mcp",
                 }
             ],
         }
 
-    profile = get_customer(customer_id)
+    profile = call_mcp_tool_sync("get_customer_profile", {"customer_id": customer_id})
 
-    if profile is None:
+    if isinstance(profile, dict) and "error" in profile:
         return {
-            "customer_context": {"error": f"Customer {customer_id} not found"},
+            "customer_context": {"error": profile["error"]},
             "audit_trail": state.get("audit_trail", []) + [
                 {
                     "step": "minimal_customer_context",
                     "timestamp": datetime.now(UTC).isoformat(),
-                    "error": f"Customer {customer_id} not found",
+                    "error": profile["error"],
+                    "source": "mcp",
                 }
             ],
         }
@@ -69,6 +67,7 @@ def get_minimal_customer_context(state: GraphState) -> dict[str, Any]:
         "step": "minimal_customer_context",
         "timestamp": datetime.now(UTC).isoformat(),
         "customer_id": customer_id,
+        "source": "mcp",
         "mode": "minimal - sensitive case fast-track",
     }
 

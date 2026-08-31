@@ -1,6 +1,6 @@
 # Customer Support Resolution Copilot
 
-> An AI-powered support workflow copilot using LangGraph, LangChain, and RAG to classify support cases, retrieve policy guidance, draft grounded responses, flag sensitive issues, and enforce human approval before customer-facing actions.
+> An AI-powered support workflow copilot using LangGraph, LangChain, RAG, and MCP to classify support cases, retrieve policy guidance, draft grounded responses, flag sensitive issues, and enforce human approval before customer-facing actions.
 
 ---
 
@@ -16,8 +16,15 @@ Customer message + Customer ID
 LangGraph Workflow
       │
       ├── Classify Ticket (structured output)
-      ├── Retrieve Policy (RAG with category filtering)
-      ├── Customer Context (full or minimal for sensitive cases)
+      ├── Retrieve Policy (RAG with category filtering → ChromaDB)
+      ├── Customer Context ──→ MCP Client
+      │     │                    └── MCP Support Server
+      │     │                          ├── get_customer_profile (tool)
+      │     │                          ├── get_ticket_history (tool)
+      │     │                          ├── get_recent_transactions (tool)
+      │     │                          ├── get_bonus_status (tool)
+      │     │                          └── policy:// (resources)
+      │     └── (full or minimal for sensitive cases)
       ├── Risk Check (rule-based risk assessment)
       ├── Generate Resolution Plan (draft + recommendation)
       ├── Groundedness Check (dual: draft + recommendation)
@@ -71,6 +78,7 @@ graph TD
 | Structured classification | `TicketClassification` with 7 Literal categories via `with_structured_output` |
 | RAG | ChromaDB vector store with markdown section-aware chunking and category metadata filtering |
 | Tool calling | 5 LangChain tools for customer, ticket, transaction, bonus, and policy lookup |
+| MCP | MCP server exposing tools + policy resources, connected via stdio client with langchain-mcp-adapters |
 | Risk assessment | Rule-based engine with 5 priority-ordered risk rules |
 | Response generation | Separate chains for customer draft (what to SAY) and internal recommendation (what to DO) |
 | Groundedness checking | LLM-based verification of both outputs against policy context |
@@ -144,6 +152,49 @@ graph TD
 | `search_policy_documents` | Read-only | RAG search over policy corpus |
 
 The agent can **recommend** and **draft** but never execute dangerous actions (send messages, close accounts, issue refunds) without approval.
+
+---
+
+## MCP Server
+
+The project includes a **Model Context Protocol (MCP) server** that exposes customer support data as a standard context interface. The LangGraph agent connects to it via an MCP client, demonstrating the MCP pattern for tool and resource access.
+
+### MCP Tools (executable functions)
+
+| Tool | Description |
+|---|---|
+| `get_customer_profile` | Customer profile, status, risk level, flags |
+| `get_ticket_history` | Past and open support tickets |
+| `get_recent_transactions` | Deposits, withdrawals, failed attempts |
+| `get_bonus_status` | Active bonuses, wagering progress |
+
+### MCP Resources (contextual data)
+
+| URI | Description |
+|---|---|
+| `policy://list` | List all available policy documents |
+| `policy://{filename}` | Retrieve a specific policy document by name |
+
+### How it connects
+
+```
+LangGraph node (customer_context)
+      │
+      ▼
+  MCP Client (mcp_server/client.py)
+      │ stdio
+      ▼
+  MCP Server (mcp_server/server.py)
+      │
+      ├── Tools → storage/mock_data.py
+      └── Resources → data/policies/*.md
+```
+
+Run the MCP server standalone:
+```bash
+uv run python mcp_server/server.py                        # stdio
+uv run python mcp_server/server.py --transport http --port 8100  # HTTP
+```
 
 ---
 
@@ -300,6 +351,10 @@ customer-support-agent/
 │   ├── vector_store.py             # ChromaDB policy store
 │   └── pii.py                      # PII masking utilities
 │
+├── mcp_server/
+│   ├── server.py                   # MCP server (tools + resources)
+│   └── client.py                   # MCP client wrapper
+│
 ├── evals/
 │   ├── dataset.py                  # 25 evaluation cases
 │   ├── evaluators.py               # 5 evaluation dimensions
@@ -345,3 +400,4 @@ customer-support-agent/
 | Testing | pytest |
 | Linting | Ruff |
 | Package management | uv |
+| MCP | mcp + langchain-mcp-adapters (FastMCP server, stdio client) |

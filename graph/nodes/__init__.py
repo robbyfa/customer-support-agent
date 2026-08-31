@@ -4,8 +4,8 @@ from graph.nodes.approval_gate import approval_gate
 from graph.nodes.audit_log import audit_log
 from graph.nodes.classify_ticket import classify_ticket
 from graph.nodes.customer_context import get_customer_context
-from graph.nodes.draft_response import draft_response
 from graph.nodes.final_response import final_response
+from graph.nodes.generate_resolution_plan import generate_resolution_plan
 from graph.nodes.groundedness_check import groundedness_check
 from graph.nodes.manual_review_response import manual_review_response
 from graph.nodes.minimal_customer_context import get_minimal_customer_context
@@ -16,8 +16,8 @@ __all__ = [
     "approval_gate",
     "audit_log",
     "classify_ticket",
-    "draft_response",
     "final_response",
+    "generate_resolution_plan",
     "get_customer_context",
     "get_minimal_customer_context",
     "groundedness_check",

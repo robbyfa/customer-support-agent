@@ -280,6 +280,15 @@ if result:
     # ── 2b. Internal recommendation (what to DO) ────────────────────
     if recommendation and recommendation.get("recommended_action"):
         st.subheader("🎯 Internal Recommendation")
+        action_type = recommendation.get("action_type", "")
+        target_team = recommendation.get("target_team", "")
+        if action_type or target_team:
+            meta_badges = ""
+            if action_type:
+                meta_badges += _badge(action_type, "purple")
+            if target_team:
+                meta_badges += _badge(f"→ {target_team}", "blue")
+            st.markdown(meta_badges, unsafe_allow_html=True)
         st.warning(recommendation.get("recommended_action", ""))
         if recommendation.get("reason"):
             st.caption(f"**Reason:** {recommendation['reason']}")

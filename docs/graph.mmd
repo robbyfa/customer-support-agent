@@ -8,10 +8,10 @@ graph TD
 	__start__([Start]):::first
 	classify_ticket(🏷️ Classify Ticket)
 	retrieve_policy(📄 Retrieve Policy)
-	minimal_ctx(👤 Minimal Customer Context)
-	full_ctx(👤 Full Customer Context)
+	minimal_ctx(👤 Minimal Context)
+	full_ctx(👤 Full Context)
 	risk_check(⚠️ Risk Check)
-	draft_response(✉️ Draft Response)
+	resolution_plan(🎯 Generate Resolution Plan)
 	groundedness_check{🔍 Groundedness Check}
 	manual_review(🛑 Manual Review Response)
 	approval_gate(🔒 Approval Gate)
@@ -25,10 +25,10 @@ graph TD
 	retrieve_policy -- "standard<br/>(all other categories)" --> full_ctx
 	minimal_ctx --> risk_check
 	full_ctx --> risk_check
-	risk_check --> draft_response
-	draft_response --> groundedness_check
-	groundedness_check -- "grounded ✅" --> approval_gate
-	groundedness_check -- "not grounded 🔄<br/>(retry, max 2)" --> draft_response
+	risk_check --> resolution_plan
+	resolution_plan --> groundedness_check
+	groundedness_check -- "both grounded ✅" --> approval_gate
+	groundedness_check -- "not grounded 🔄<br/>(retry, max 2)" --> resolution_plan
 	groundedness_check -- "retries exhausted 🛑" --> manual_review
 	manual_review --> approval_gate
 	approval_gate --> audit_log

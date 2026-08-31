@@ -1,4 +1,4 @@
-"""Node: draft_response - generates both:
+"""Node: generate_resolution_plan - produces both:
 1. A customer-facing draft response (what to SAY)
 2. An internal action recommendation (what to DO)
 
@@ -14,8 +14,8 @@ from graph.chains.response_generator import get_response_chain
 from graph.state import GraphState
 
 
-def draft_response(state: GraphState) -> dict[str, Any]:
-    """Generate a draft response and a separate internal recommendation.
+def generate_resolution_plan(state: GraphState) -> dict[str, Any]:
+    """Generate a customer-facing draft and a separate internal recommendation.
 
     Returns:
     - draft_response: dict - the customer-facing message (DraftResponse)
@@ -58,7 +58,7 @@ def draft_response(state: GraphState) -> dict[str, Any]:
     recommendation = rec_result.model_dump()
 
     audit_entry = {
-        "step": "draft_response",
+        "step": "generate_resolution_plan",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "tone": draft["tone"],
         "approval_required": draft["approval_required"],

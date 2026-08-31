@@ -160,23 +160,29 @@ from models.recommendation import SupportRecommendation
 class TestSupportRecommendationInstantiation:
     def test_valid_full(self):
         r = SupportRecommendation(
+            action_type="escalate_to_team",
             recommended_action="Escalate to Payments Operations",
+            target_team="Payments Operations",
             reason="3 failed withdrawals per policy",
             relevant_policy_sources=["withdrawal_policy.md"],
             missing_information=["Payment provider error details"],
             human_review_required=True,
         )
         assert r.recommended_action == "Escalate to Payments Operations"
+        assert r.action_type == "escalate_to_team"
+        assert r.target_team == "Payments Operations"
         assert len(r.relevant_policy_sources) == 1
 
     def test_defaults_for_lists(self):
         r = SupportRecommendation(
+            action_type="no_action_needed",
             recommended_action="Standard response",
             reason="Low-risk inquiry",
             human_review_required=False,
         )
         assert r.relevant_policy_sources == []
         assert r.missing_information == []
+        assert r.target_team == ""
 
 
 class TestSupportRecommendationValidation:
@@ -192,7 +198,9 @@ class TestSupportRecommendationValidation:
 class TestSupportRecommendationSerialization:
     def test_round_trip(self):
         r = SupportRecommendation(
+            action_type="escalate_to_team",
             recommended_action="Escalate",
+            target_team="Compliance",
             reason="High risk",
             relevant_policy_sources=["escalation_policy.md"],
             missing_information=[],

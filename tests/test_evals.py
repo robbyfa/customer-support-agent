@@ -282,3 +282,117 @@ class TestAggregateScoring:
         result = _mock_result()
         scores = evaluate_response(expected, result)
         assert 0.0 <= scores["aggregate"] <= 1.0
+
+
+# ===========================================================================
+# Separation evaluator tests
+# ===========================================================================
+
+from evals.separation_evals import (
+    eval_approval_correctness,
+    eval_draft_is_customer_safe,
+    eval_missing_info_quality,
+    eval_no_unconfirmed_actions,
+    eval_recommendation_is_internal_action,
+    evaluate_separation,
+)
+
+
+def _sep_mock(
+    draft_message="We understand your concern and will look into it.",
+    rec_action="Check the verification queue and escalate to Compliance if overdue.",
+    rec_reason="Pending for more than 48 hours per policy.",
+    missing_info=None,    approval_required=True,
+    requires_review=True,
+):
+    return {
+        "final_output": {
+            "draft_response": {
+                "customer_message": draft_message,
+                "approval_required": approval_required,
+            },
+            "recommendation": {
+                "recommended_action": rec_action,
+                "reason": rec_reason,
+                "missing_information": missing_info if missing_info is not None else ["verification_queue_status"],
+            },
+            "risk_assessment": {
+                "requires_human_review": requires_review,
+            },
+        },
+    }
+
+
+class TestDraftIsCustomerSafe:
+    def test_clean_draft_passes(self):
+        result = _sep_mock()
+        check = eval_draft_is_customer_safe(result)
+        assert check["is_safe"] is True
+
+    def test_draft_with_escalated_fails(self):
+        result = _sep_mock(draft_message="I have escalated your case to compliance.")
+        check = eval_draft_is_customer_safe(result)
+        assert check["is_safe"] is False
+
+    def test_draft_with_internal_language_fails(self):
+        result = _sep_mock(draft_message="We will check the queue for your documents.")
+        check = eval_draft_is_customer_safe(result)
+        assert check["is_safe"] is False
+
+
+class TestRecommendationIsInternal:
+    def test_good_recommendation_passes(self):
+        result = _sep_mock()
+        check = eval_recommendation_is_internal_action(result)
+        assert check["is_internal"] is True
+
+    def test_customer_facing_recommendation_fails(self):
+        result = _sep_mock(rec_action="Dear customer, thank you for your patience.")
+        check = eval_recommendation_is_internal_action(result)
+        assert check["is_internal"] is False
+
+
+class TestNoUnconfirmedActions:
+    def test_clean_passes(self):
+        result = _sep_mock()
+        check = eval_no_unconfirmed_actions(result)
+        assert check["no_unconfirmed"] is True
+
+    def test_draft_claims_action_fails(self):
+        result = _sep_mock(draft_message="Your case has been escalated to the team.")
+        check = eval_no_unconfirmed_actions(result)
+        assert check["no_unconfirmed"] is False
+
+
+class TestMissingInfoQuality:
+    def test_specific_info_passes(self):
+        result = _sep_mock(missing_info=["verification_queue_status", "expected_timeline"])
+        check = eval_missing_info_quality(result)
+        assert check["score"] == 1.0
+
+    def test_empty_info_gets_low_score(self):
+        result = _sep_mock(missing_info=[])
+        check = eval_missing_info_quality(result)
+        assert check["score"] == 0.5
+
+
+class TestApprovalCorrectness:
+    def test_expected_review_matches(self):
+        expected = {"expected_human_review": True}
+        result = _sep_mock(approval_required=True, requires_review=True)
+        check = eval_approval_correctness(expected, result)
+        assert check["correct"] is True
+
+    def test_missed_review_fails(self):
+        expected = {"expected_human_review": True}
+        result = _sep_mock(approval_required=False, requires_review=False)
+        check = eval_approval_correctness(expected, result)
+        assert check["correct"] is False
+
+
+class TestSeparationAggregate:
+    def test_clean_result_high_score(self):
+        expected = {"expected_human_review": True}
+        result = _sep_mock()
+        scores = evaluate_separation(expected, result)
+        assert scores["aggregate"] >= 0.8

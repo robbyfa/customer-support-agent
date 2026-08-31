@@ -207,10 +207,10 @@ class TestCustomerContextNode:
 
 
 # ===========================================================================
-# draft_response node tests (Task 9)
+# generate_resolution_plan node tests (Task 9)
 # ===========================================================================
 
-from graph.nodes.draft_response import draft_response
+from graph.nodes.generate_resolution_plan import generate_resolution_plan
 
 
 @requires_api_key
@@ -243,7 +243,7 @@ class TestDraftResponseNode:
             },
             "audit_trail": [],
         }
-        result = draft_response(state)
+        result = generate_resolution_plan(state)
 
         assert "draft_response" in result
         assert "recommendation" in result
@@ -276,7 +276,7 @@ class TestDraftResponseNode:
             },
             "audit_trail": [],
         }
-        result = draft_response(state)
+        result = generate_resolution_plan(state)
 
         dr = result["draft_response"]
         assert isinstance(dr["customer_message"], str)
@@ -291,11 +291,11 @@ class TestDraftResponseNode:
             "risk_assessment": {"risk_level": "low", "requires_human_review": False},
             "audit_trail": [{"step": "risk_check"}],
         }
-        result = draft_response(state)
+        result = generate_resolution_plan(state)
 
         trail = result["audit_trail"]
         assert len(trail) == 2
-        assert trail[1]["step"] == "draft_response"
+        assert trail[1]["step"] == "generate_resolution_plan"
         assert "tone" in trail[1]
 
 
@@ -515,7 +515,7 @@ class TestEndToEndGraph:
         assert "retrieve_policy" in steps
         assert "customer_context" in steps
         assert "risk_check" in steps
-        assert "draft_response" in steps
+        assert "generate_resolution_plan" in steps
         assert "approval_gate" in steps
         assert "final_response" in steps
 

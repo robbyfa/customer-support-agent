@@ -4,9 +4,9 @@ Flow:
   START → classify_ticket → retrieve_policy → route_by_sensitivity
     ├── sensitive → minimal_customer_context → risk_check
     └── standard → customer_context → risk_check
-  risk_check → draft_response → groundedness_check
+  risk_check → generate_resolution_plan → groundedness_check
     ├── grounded       → approval_gate
-    ├── not grounded   → draft_response (retry, max 2)
+    ├── not grounded   → generate_resolution_plan (retry, max 2)
     └── retries exhausted → manual_review_response → approval_gate
   approval_gate → audit_log → final_response → END
 """
@@ -30,7 +30,7 @@ from graph.nodes import (
     approval_gate,
     audit_log,
     classify_ticket,
-    draft_response,
+    generate_resolution_plan,
     final_response,
     get_customer_context,
     get_minimal_customer_context,
@@ -68,7 +68,7 @@ def _route_after_groundedness(state: GraphState) -> str:
     """Decide next step after groundedness check.
 
     - grounded            → approval_gate
-    - not grounded, retries left → draft_response (retry)
+    - not grounded, retries left → generate_resolution_plan (retry)
     - retries exhausted   → manual_review_response (safe fallback)
     """
     check = state.get("groundedness_check", {})
@@ -98,7 +98,7 @@ def build_graph() -> StateGraph:
     graph.add_node(CUSTOMER_CONTEXT, get_customer_context)
     graph.add_node(MINIMAL_CUSTOMER_CONTEXT, get_minimal_customer_context)
     graph.add_node(RISK_CHECK, risk_check)
-    graph.add_node(DRAFT_RESPONSE, draft_response)
+    graph.add_node(DRAFT_RESPONSE, generate_resolution_plan)
     graph.add_node(GROUNDEDNESS_CHECK, groundedness_check)
     graph.add_node(MANUAL_REVIEW_RESPONSE, manual_review_response)
     graph.add_node(APPROVAL_GATE, approval_gate)

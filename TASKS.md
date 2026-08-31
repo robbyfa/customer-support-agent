@@ -130,19 +130,19 @@
 - [x] Extend `tests/test_graph.py` - response chain with full context → approval_required=True for high-risk, empathetic tone for negative sentiment
 - [x] Verify: `uv run pytest tests/test_schemas.py tests/test_graph.py -v -k "draft"` passes
 
-### Task 10: Component - approval_gate and final_response
+### Task 10: Component - approval_gate and final_response ✅
 
 **Nodes:**
-- [ ] Create `graph/nodes/approval_gate.py` - `def approval_gate(state) -> dict` returning approved (bool), audit_trail
-- [ ] Create `graph/nodes/final_response.py` - `def final_response(state) -> dict` assembling final_output, audit_trail
-- [ ] Update `graph/nodes/__init__.py` - export both
+- [x] Create `graph/nodes/approval_gate.py` - `def approval_gate(state) -> dict` returning approved (bool), audit_trail
+- [x] Create `graph/nodes/final_response.py` - `def final_response(state) -> dict` assembling final_output, audit_trail
+- [x] Update `graph/nodes/__init__.py` - export both
 
 **Tests:**
-- [ ] Extend `tests/test_graph.py`:
-  - [ ] approval_gate: risk requires review → approved=False
-  - [ ] approval_gate: no review needed → approved=True
-  - [ ] final_response: assembles all state pieces into final_output with expected keys
-- [ ] Verify: `uv run pytest tests/test_graph.py -v -k "approval or final"` passes
+- [x] Extend `tests/test_graph.py`:
+  - [x] approval_gate: risk requires review → approved=False
+  - [x] approval_gate: no review needed → approved=True
+  - [x] final_response: assembles all state pieces into final_output with expected keys
+- [x] Verify: `uv run pytest tests/test_graph.py -v -k "approval or final"` passes
 
 ---
 
@@ -233,7 +233,7 @@
 | Phase | Tasks | Status |
 |-------|-------|--------|
 | Phase 0 - Foundation | Tasks 1–4 | ✅ Complete |
-| Phase 1 - Components | Tasks 5–10 | ⬜ Not started |
+| Phase 1 - Components | Tasks 5–10 | ✅ Complete |
 | Phase 2 - Integration | Tasks 11–13 | ⬜ Not started |
 | Phase 3 - Evaluation | Task 14 | ⬜ Not started |
 | Phase 4 - Polish | Tasks 15–18 | ⬜ Not started |

@@ -1,4 +1,4 @@
-"""Node: draft_response — generates a draft customer-facing response and
+"""Node: draft_response - generates a draft customer-facing response and
 an internal support recommendation using the response chain.
 """
 

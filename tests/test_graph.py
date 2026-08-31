@@ -297,3 +297,150 @@ class TestDraftResponseNode:
         assert len(trail) == 2
         assert trail[1]["step"] == "draft_response"
         assert "tone" in trail[1]
+
+
+# ===========================================================================
+# approval_gate and final_response node tests (Task 10)
+# ===========================================================================
+
+from graph.nodes.approval_gate import approval_gate
+from graph.nodes.final_response import final_response
+
+
+class TestApprovalGateNode:
+    def test_risk_requires_review_not_approved(self):
+        state = {
+            "risk_assessment": {"requires_human_review": True},
+            "draft_response": {"approval_required": False},
+            "classification": {"sensitive_case": False},
+            "audit_trail": [],
+        }
+        result = approval_gate(state)
+        assert result["approved"] is False
+
+    def test_draft_requires_approval_not_approved(self):
+        state = {
+            "risk_assessment": {"requires_human_review": False},
+            "draft_response": {"approval_required": True},
+            "classification": {"sensitive_case": False},
+            "audit_trail": [],
+        }
+        result = approval_gate(state)
+        assert result["approved"] is False
+
+    def test_sensitive_case_not_approved(self):
+        state = {
+            "risk_assessment": {"requires_human_review": False},
+            "draft_response": {"approval_required": False},
+            "classification": {"sensitive_case": True},
+            "audit_trail": [],
+        }
+        result = approval_gate(state)
+        assert result["approved"] is False
+
+    def test_no_review_needed_approved(self):
+        state = {
+            "risk_assessment": {"requires_human_review": False},
+            "draft_response": {"approval_required": False},
+            "classification": {"sensitive_case": False},
+            "audit_trail": [],
+        }
+        result = approval_gate(state)
+        assert result["approved"] is True
+
+    def test_audit_trail_appended(self):
+        state = {
+            "risk_assessment": {"requires_human_review": False},
+            "draft_response": {"approval_required": False},
+            "classification": {"sensitive_case": False},
+            "audit_trail": [{"step": "draft_response"}],
+        }
+        result = approval_gate(state)
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        assert trail[1]["step"] == "approval_gate"
+        assert "approved" in trail[1]
+        assert "reason" in trail[1]
+
+
+class TestFinalResponseNode:
+    def test_approved_status(self):
+        state = {
+            "customer_message": "My withdrawal keeps failing.",
+            "customer_id": "CUST-1001",
+            "classification": {"category": "withdrawal_issue"},
+            "policy_context": ["Withdrawal policy content"],
+            "customer_context": {"profile": {"customer_id": "CUST-1001"}},
+            "risk_assessment": {"risk_level": "high"},
+            "recommendation": {"recommended_action": "Escalate"},
+            "draft_response": {"customer_message": "We are investigating."},
+            "approved": True,
+            "audit_trail": [],
+        }
+        result = final_response(state)
+
+        fo = result["final_output"]
+        assert fo["status"] == "approved"
+        assert fo["approved"] is True
+        assert fo["customer_id"] == "CUST-1001"
+
+    def test_pending_review_status(self):
+        state = {
+            "customer_message": "Self-exclusion request.",
+            "customer_id": "CUST-1006",
+            "classification": {"category": "responsible_gaming"},
+            "policy_context": [],
+            "customer_context": {},
+            "risk_assessment": {"risk_level": "high"},
+            "recommendation": {},
+            "draft_response": {},
+            "approved": False,
+            "audit_trail": [],
+        }
+        result = final_response(state)
+
+        fo = result["final_output"]
+        assert fo["status"] == "pending_review"
+        assert fo["approved"] is False
+
+    def test_final_output_has_all_keys(self):
+        state = {
+            "customer_message": "Test",
+            "customer_id": "CUST-1001",
+            "classification": {},
+            "policy_context": [],
+            "customer_context": {},
+            "risk_assessment": {},
+            "recommendation": {},
+            "draft_response": {},
+            "approved": True,
+            "audit_trail": [],
+        }
+        result = final_response(state)
+
+        expected_keys = {
+            "customer_message",
+            "customer_id",
+            "classification",
+            "policy_context",
+            "customer_context",
+            "risk_assessment",
+            "recommendation",
+            "draft_response",
+            "approved",
+            "status",
+        }
+        assert expected_keys.issubset(result["final_output"].keys())
+
+    def test_audit_trail_appended(self):
+        state = {
+            "customer_message": "Test",
+            "approved": True,
+            "audit_trail": [{"step": "approval_gate"}],
+        }
+        result = final_response(state)
+
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        assert trail[1]["step"] == "final_response"
+        assert trail[1]["status"] == "approved"

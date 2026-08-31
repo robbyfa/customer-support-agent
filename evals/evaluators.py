@@ -5,7 +5,6 @@ Five evaluation dimensions with a weighted aggregate scorer.
 
 from typing import Any
 
-
 # ---------------------------------------------------------------------------
 # 1. Classification accuracy (0.25)
 # ---------------------------------------------------------------------------

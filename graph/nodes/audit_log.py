@@ -5,7 +5,7 @@ Adds a summary entry with total steps, total duration estimate, and
 key decisions made during the pipeline run.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
@@ -25,7 +25,7 @@ def audit_log(state: GraphState) -> dict[str, Any]:
 
     summary = {
         "step": "audit_log",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "total_steps": len(trail) + 1,
         "category": classification.get("category", "unknown"),
         "risk_level": risk.get("risk_level", "unknown"),

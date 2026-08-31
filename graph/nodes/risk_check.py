@@ -3,7 +3,7 @@ customer context, and policy signals to determine risk level and whether
 human review is required.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
@@ -93,7 +93,7 @@ def risk_check(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "risk_check",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "risk_level": risk_level,
         "requires_human_review": requires_human,
         "risk_factors_count": len(risk_factors),

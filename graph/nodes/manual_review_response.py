@@ -5,11 +5,10 @@ Replaces the ungrounded draft AND the stale recommendation with safe
 content flagged for manual review.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
-
 
 _MANUAL_REVIEW_TEMPLATE = (
     "Thank you for contacting us. Your case will be reviewed by a "
@@ -55,7 +54,7 @@ def manual_review_response(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "manual_review_response",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "reason": "Groundedness check failed after max retries",
         "original_category": classification.get("category", "unknown"),
         "risk_level": risk.get("risk_level", "unknown"),

@@ -6,7 +6,7 @@ These are produced by separate LLM chains with different prompts.
 """
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.chains.recommendation_generator import get_recommendation_chain
@@ -59,7 +59,7 @@ def generate_resolution_plan(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "generate_resolution_plan",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "tone": draft["tone"],
         "approval_required": draft["approval_required"],
         "recommended_action": recommendation["recommended_action"][:100],

@@ -2,7 +2,7 @@
 TicketClassification and extracts the customer ID if present.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.chains.classifier import get_classification_chain
@@ -24,7 +24,7 @@ def classify_ticket(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "classify_ticket",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "category": classification["category"],
         "urgency": classification["urgency"],
         "sentiment": classification["sentiment"],

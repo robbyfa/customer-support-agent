@@ -6,7 +6,7 @@ Dual check:
 2. Does the recommendation avoid claiming unconfirmed actions?
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.chains.groundedness_checker import get_groundedness_chain
@@ -70,7 +70,7 @@ def groundedness_check(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "groundedness_check",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "is_grounded": is_grounded,
         "draft_grounded": draft_check["is_grounded"],
         "recommendation_grounded": rec_check["is_grounded"],

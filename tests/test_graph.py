@@ -524,8 +524,8 @@ class TestEndToEndGraph:
 # Groundedness routing tests (no LLM needed)
 # ===========================================================================
 
-from graph.graph import _route_after_groundedness
 from graph.consts import APPROVAL_GATE, DRAFT_RESPONSE, MANUAL_REVIEW_RESPONSE
+from graph.graph import _route_after_groundedness
 
 
 class TestGroundednessRouting:
@@ -566,8 +566,8 @@ class TestGroundednessRouting:
 # Conditional routing tests (Task 15 - updated for new graph)
 # ===========================================================================
 
-from graph.graph import route_by_category
 from graph.consts import CUSTOMER_CONTEXT, MINIMAL_CUSTOMER_CONTEXT
+from graph.graph import route_by_category
 
 
 class TestRouteByCategory:
@@ -604,9 +604,9 @@ class TestRouteByCategory:
 # New node tests: minimal_customer_context, manual_review, audit_log
 # ===========================================================================
 
-from graph.nodes.minimal_customer_context import get_minimal_customer_context
-from graph.nodes.manual_review_response import manual_review_response
 from graph.nodes.audit_log import audit_log as audit_log_node
+from graph.nodes.manual_review_response import manual_review_response
+from graph.nodes.minimal_customer_context import get_minimal_customer_context
 
 
 class TestMinimalCustomerContext:

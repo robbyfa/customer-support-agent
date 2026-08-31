@@ -205,28 +205,28 @@
 - [x] Extend `tests/test_graph.py` - verify different categories follow different paths
 - [x] Verify: `uv run pytest tests/test_graph.py -v` passes
 
-### Task 16: LangSmith tracing and audit trail polish
+### Task 16: LangSmith tracing and audit trail polish ✅
 
-- [ ] Verify all nodes append to audit_trail with step name, timestamp, duration, key metadata
-- [ ] Configure LangSmith tracing via env vars
-- [ ] Polish audit trail display in Streamlit UI
-- [ ] Print audit trail in main.py CLI output
-- [ ] Verify: audit_trail contains entries for all 7 nodes after full graph run
+- [x] Verify all nodes append to audit_trail with step name, timestamp, duration, key metadata
+- [x] Configure LangSmith tracing via env vars
+- [x] Polish audit trail display in Streamlit UI
+- [x] Print audit trail in main.py CLI output
+- [x] Verify: audit_trail contains entries for all 7 nodes after full graph run
 
-### Task 17: README and documentation
+### Task 17: README and documentation ✅
 
-- [ ] Write `README.md` - project overview, architecture diagram (mermaid), LangGraph workflow diagram (mermaid), example scenarios, policy RAG explanation, tool list, approval gate explanation, eval results, screenshots, limitations, future improvements, setup instructions
-- [ ] Update `.env.example` with documented env vars
-- [ ] Verify: README renders correctly, setup instructions work from scratch
+- [x] Write `README.md` - project overview, architecture diagram (mermaid), LangGraph workflow diagram (mermaid), example scenarios, policy RAG explanation, tool list, approval gate explanation, eval results, screenshots, limitations, future improvements, setup instructions
+- [x] Update `.env.example` with documented env vars
+- [x] Verify: README renders correctly, setup instructions work from scratch
 
-### Task 18: Docker setup and final polish
+### Task 18: Docker setup and final polish ✅
 
-- [ ] Create `Dockerfile` (Python 3.12 slim, uv, expose 8501)
-- [ ] Create `docker-compose.yml` (single Streamlit service)
-- [ ] Run `uv run ruff check --fix .` - full linting pass
-- [ ] Run `uv run pytest -v` - full test suite passes
-- [ ] Run `uv run python -m evals.run_evals` - capture results for README
-- [ ] Verify: `docker compose up` launches Streamlit at localhost:8501
+- [x] Create `Dockerfile` (Python 3.12 slim, uv, expose 8501)
+- [x] Create `docker-compose.yml` (single Streamlit service)
+- [x] Run `uv run ruff check --fix .` - full linting pass
+- [x] Run `uv run pytest -v` - full test suite passes
+- [x] Run `uv run python -m evals.run_evals` - capture results for README
+- [x] Verify: `docker compose up` launches Streamlit at localhost:8501
 
 ---
 
@@ -238,4 +238,4 @@
 | Phase 1 - Components | Tasks 5–10 | ✅ Complete |
 | Phase 2 - Integration | Tasks 11–13 | ✅ Complete |
 | Phase 3 - Evaluation | Task 14 | ✅ Complete |
-| Phase 4 - Polish | Tasks 15–18 | ⬜ Not started |
+| Phase 4 - Polish | Tasks 15–18 | ✅ Complete |

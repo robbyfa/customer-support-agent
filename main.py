@@ -9,9 +9,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from storage.vector_store import PolicyVectorStore  # noqa: E402
-from tools.registry import configure  # noqa: E402
-
+from storage.vector_store import PolicyVectorStore
+from tools.registry import configure
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -105,7 +104,7 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
     print(sep)
 
     # Classification
-    print(f"\n  📋 Classification")
+    print("\n  📋 Classification")
     print(f"     Category:      {classification.get('category', '?')}")
     print(f"     Urgency:       {classification.get('urgency', '?')}")
     print(f"     Sentiment:     {classification.get('sentiment', '?')}")
@@ -113,7 +112,7 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
 
     # Customer flags
     if flags:
-        print(f"\n  👤 Customer Flags")
+        print("\n  👤 Customer Flags")
         print(f"     Failed withdrawals:    {flags.get('failed_withdrawal_count', 0)}")
         print(f"     Account locked:        {flags.get('account_locked', False)}")
         print(f"     Verification pending:  {flags.get('verification_pending', False)}")
@@ -121,7 +120,7 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
         print(f"     Active bonus:          {flags.get('has_active_bonus', False)}")
 
     # Risk
-    print(f"\n  ⚠️  Risk Assessment")
+    print("\n  ⚠️  Risk Assessment")
     print(f"     Risk level:       {risk.get('risk_level', '?')}")
     print(f"     Human review:     {risk.get('requires_human_review', '?')}")
     if risk.get("risk_factors"):
@@ -132,7 +131,7 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
     gc = result.get("groundedness_check", {})
     if gc:
         grounded = "✅ Yes" if gc.get("is_grounded") else "❌ No"
-        print(f"\n  🔍 Groundedness Check")
+        print("\n  🔍 Groundedness Check")
         print(f"     Grounded:    {grounded}")
         print(f"     Confidence:  {gc.get('confidence', '?')}")
         if gc.get("issues"):
@@ -140,7 +139,7 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
                 print(f"     ⚠ {issue}")
 
     # Recommendation
-    print(f"\n  💡 Recommendation")
+    print("\n  💡 Recommendation")
     print(f"     {recommendation.get('recommended_action', 'N/A')[:200]}")
 
     # Draft response
@@ -152,9 +151,9 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
     # Approval
     status = fo.get("status", "?")
     if status == "approved":
-        print(f"\n  ✅ Status: APPROVED - ready to send")
+        print("\n  ✅ Status: APPROVED - ready to send")
     else:
-        print(f"\n  🔒 Status: PENDING REVIEW - requires human approval")
+        print("\n  🔒 Status: PENDING REVIEW - requires human approval")
         if draft.get("reason_approval_required"):
             print(f"     Reason: {draft['reason_approval_required']}")
 

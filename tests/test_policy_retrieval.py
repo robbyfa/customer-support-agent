@@ -142,8 +142,8 @@ class TestReset:
 # retrieve_policy node tests (Task 6)
 # ===========================================================================
 
-from tools.registry import configure
 from graph.nodes.retrieve_policy import retrieve_policy
+from tools.registry import configure
 
 
 @pytest.fixture(scope="module")

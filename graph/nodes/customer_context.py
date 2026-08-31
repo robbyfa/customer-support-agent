@@ -2,7 +2,7 @@
 tickets, and bonus data into a single context dict.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
@@ -29,7 +29,7 @@ def get_customer_context(state: GraphState) -> dict[str, Any]:
             "audit_trail": state.get("audit_trail", []) + [
                 {
                     "step": "customer_context",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "error": "No customer_id provided",
                 }
             ],
@@ -43,7 +43,7 @@ def get_customer_context(state: GraphState) -> dict[str, Any]:
             "audit_trail": state.get("audit_trail", []) + [
                 {
                     "step": "customer_context",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "error": f"Customer {customer_id} not found",
                 }
             ],
@@ -78,7 +78,7 @@ def get_customer_context(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "customer_context",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "customer_id": customer_id,
         "transactions_found": len(transactions),
         "tickets_found": len(tickets),

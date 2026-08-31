@@ -20,10 +20,10 @@ load_dotenv()
 if not os.getenv("LANGCHAIN_TRACING_V2"):
     os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
-from evals.dataset import get_by_category, get_dataset  # noqa: E402
-from evals.evaluators import evaluate_response  # noqa: E402
-from storage.vector_store import PolicyVectorStore  # noqa: E402
-from tools.registry import configure  # noqa: E402
+from evals.dataset import get_by_category, get_dataset
+from evals.evaluators import evaluate_response
+from storage.vector_store import PolicyVectorStore
+from tools.registry import configure
 
 
 def _score_emoji(score: float) -> str:

@@ -26,3 +26,12 @@ dev = [
 markers = [
     "llm: tests that require an LLM API key (OPENAI_API_KEY)",
 ]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+ignore = [
+    "ISC004",  # Implicit string concatenation in tuples — intentional for LangChain prompts
+    "BLE001",  # Broad exception catch — acceptable in eval runner
+]

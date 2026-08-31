@@ -9,7 +9,6 @@ from pydantic import ValidationError
 
 from models.classification import TicketClassification
 
-
 # ---------------------------------------------------------------------------
 # TicketClassification
 # ---------------------------------------------------------------------------

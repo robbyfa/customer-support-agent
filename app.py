@@ -14,9 +14,9 @@ load_dotenv()
 if not os.getenv("LANGCHAIN_TRACING_V2"):
     os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
-from storage.mock_data import load_customers  # noqa: E402
-from storage.vector_store import PolicyVectorStore  # noqa: E402
-from tools.registry import configure  # noqa: E402
+from storage.mock_data import load_customers
+from storage.vector_store import PolicyVectorStore
+from tools.registry import configure
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -372,12 +372,23 @@ if result:
 
     with st.expander("📝 Audit Trail", expanded=False):
         trail = result.get("audit_trail", [])
-        for entry in trail:
-            step = entry.get("step", "?")
-            ts = entry.get("timestamp", "?")[:19]
-            extras = {k: v for k, v in entry.items() if k not in ("step", "timestamp")}
-            extras_str = " | ".join(f"{k}={v}" for k, v in extras.items()) if extras else ""
-            st.markdown(f"**{step}** @ `{ts}` {extras_str}")
+        if trail:
+            for i, entry in enumerate(trail):
+                step = entry.get("step", "?")
+                ts = entry.get("timestamp", "?")[:19]
+                # Step number + name + timestamp
+                st.markdown(f"**{i + 1}. {step}** - `{ts}`")
+                # Key metadata as indented details (skip step/timestamp)
+                details = {k: v for k, v in entry.items() if k not in ("step", "timestamp")}
+                if details:
+                    detail_lines = []
+                    for k, v in details.items():
+                        if isinstance(v, list):
+                            v = ", ".join(str(x) for x in v) if v else "-"
+                        detail_lines.append(f"  - {k}: `{v}`")
+                    st.markdown("\n".join(detail_lines))
+        else:
+            st.caption("No audit trail entries.")
 
 elif not result and st.session_state.customer_message:
     st.info("Click **Run Copilot** to process the message.")

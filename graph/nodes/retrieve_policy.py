@@ -2,7 +2,7 @@
 vector store based on the ticket classification, with category filtering.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
@@ -29,7 +29,7 @@ def retrieve_policy(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "retrieve_policy",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "query": query,
         "category_filter": category,
         "sources": sources,

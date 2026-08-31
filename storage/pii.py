@@ -4,7 +4,6 @@ Minimises personally identifiable information in logs while keeping
 enough context for debugging. Applied to final output and audit trail.
 """
 
-import re
 
 
 def mask_email(email: str) -> str:

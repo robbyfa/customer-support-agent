@@ -2,7 +2,7 @@
 output presented to the support agent, with PII masked in logs.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
@@ -44,7 +44,7 @@ def final_response(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "final_response",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "status": final_output["status"],
     }
 

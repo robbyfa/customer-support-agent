@@ -2,7 +2,7 @@
 sent automatically or requires human approval.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from graph.state import GraphState
@@ -35,7 +35,7 @@ def approval_gate(state: GraphState) -> dict[str, Any]:
 
     audit_entry = {
         "step": "approval_gate",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "approved": approved,
         "reason": "Auto-approved - no review flags" if approved else "Held for human review",
     }

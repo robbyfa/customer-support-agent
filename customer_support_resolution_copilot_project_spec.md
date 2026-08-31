@@ -1,8 +1,8 @@
-# Customer Support Resolution Copilot - Project Spec
+# Customer Support Resolution Agent - Project Spec
 
 ## 1. Project Overview
 
-**Customer Support Resolution Copilot** is an applied GenAI assistant for support agents. It helps classify customer messages, retrieve relevant policy guidance, inspect mock customer/account data, draft responses, flag sensitive cases, and require human approval before any customer-facing action.
+**Customer Support Resolution Agent** is an applied GenAI assistant for support agents. It helps classify customer messages, retrieve relevant policy guidance, inspect mock customer/account data, draft responses, flag sensitive cases, and require human approval before any customer-facing action.
 
 The goal is to show that you can build a **business-facing AI Engineer project** using LangChain, LangGraph, RAG, structured outputs, tool calling, evaluation, and human-in-the-loop workflows.
 
@@ -756,7 +756,7 @@ Together with your sports project, your portfolio becomes:
 Streaming Sports Intelligence Agent
 → event-driven RAG, streaming ingestion, source-grounded analysis
 
-Customer Support Resolution Copilot
+Customer Support Resolution Agent
 → business workflow AI, policy RAG, tool calling, human approval
 ```
 

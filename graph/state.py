@@ -1,4 +1,4 @@
-"""Graph state definition for the Customer Support Resolution Copilot."""
+"""Graph state definition for the Customer Support Resolution Agent."""
 
 from typing import Any, TypedDict
 

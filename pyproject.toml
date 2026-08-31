@@ -1,7 +1,7 @@
 [project]
 name = "customer-support-agent"
 version = "0.1.0"
-description = "Customer Support Resolution Copilot - AI-powered support workflow using LangGraph, RAG, and human-in-the-loop approval"
+description = "Customer Support Resolution Agent - AI-powered support workflow using LangGraph, RAG, and human-in-the-loop approval"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

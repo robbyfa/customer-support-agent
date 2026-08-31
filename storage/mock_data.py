@@ -1,4 +1,4 @@
-"""Mock data loading layer for the Customer Support Resolution Copilot.
+"""Mock data loading layer for the Customer Support Resolution Agent.
 
 Loads JSON fixtures from data/mock/ and provides lookup helpers
 used by tools and graph nodes.

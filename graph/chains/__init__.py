@@ -1,4 +1,4 @@
-"""LLM chains for the Customer Support Resolution Copilot."""
+"""LLM chains for the Customer Support Resolution Agent."""
 
 from graph.chains.classifier import get_classification_chain
 from graph.chains.groundedness_checker import get_groundedness_chain

@@ -1,4 +1,4 @@
-"""Graph nodes for the Customer Support Resolution Copilot."""
+"""Graph nodes for the Customer Support Resolution Agent."""
 
 from graph.nodes.approval_gate import approval_gate
 from graph.nodes.classify_ticket import classify_ticket

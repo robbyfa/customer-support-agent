@@ -1,4 +1,4 @@
-"""LangGraph workflow for the Customer Support Resolution Copilot.
+"""LangGraph workflow for the Customer Support Resolution Agent.
 
 Wires all nodes into a graph with a groundedness refinement loop:
 

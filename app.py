@@ -1,4 +1,4 @@
-"""Streamlit UI for the Customer Support Resolution Copilot.
+"""Streamlit UI for the Customer Support Resolution Agent.
 
 Usage:
     uv run streamlit run app.py
@@ -191,7 +191,7 @@ with st.sidebar:
 # Main area
 # ---------------------------------------------------------------------------
 
-st.header("Customer Support Resolution Copilot")
+st.header("Customer Support Resolution Agent")
 
 # Message input
 col_input, col_button = st.columns([4, 1])
@@ -232,118 +232,23 @@ if result:
     classification = fo.get("classification", {})
     risk = fo.get("risk_assessment", {})
     draft = fo.get("draft_response", {})
-    recommendation = fo.get("recommendation", {})
     ctx = fo.get("customer_context", {})
     flags = ctx.get("flags", {}) if isinstance(ctx, dict) else {}
     gc = result.get("groundedness_check", {})
 
     st.markdown("---")
 
-    # Classification badges
-    st.subheader("📋 Classification")
-    badges_html = (
-        _badge(classification.get("category", "?"), "blue")
-        + _badge(classification.get("urgency", "?"), _urgency_color(classification.get("urgency", "")))
-        + _badge(classification.get("sentiment", "?"), _sentiment_color(classification.get("sentiment", "")))
-    )
-    st.markdown(badges_html, unsafe_allow_html=True)
-    st.caption(classification.get("summary", ""))
-
-    # Two-column layout
-    left, right = st.columns(2)
-
-    with left:
-        # Policy evidence
-        with st.expander("📄 Policy Evidence", expanded=False):
-            policy_ctx = fo.get("policy_context", [])
-            # Get source names from audit trail
-            trail = result.get("audit_trail", [])
-            sources = []
-            for entry in trail:
-                if entry.get("step") == "retrieve_policy":
-                    sources = entry.get("sources", [])
-                    break
-            if policy_ctx:
-                if sources:
-                    st.markdown("**Relevant policies:** " + ", ".join(f"`{s}`" for s in sources))
-                    st.markdown("---")
-                for i, chunk in enumerate(policy_ctx):
-                    st.markdown(chunk)
-                    if i < len(policy_ctx) - 1:
-                        st.markdown("---")
-            else:
-                st.info("No policy context retrieved.")
-
-        # Customer context
-        with st.expander("👤 Customer Context", expanded=False):
-            if flags:
-                data = {
-                    "Failed Withdrawals": flags.get("failed_withdrawal_count", 0),
-                    "Account Locked": "Yes" if flags.get("account_locked") else "No",
-                    "Verification Pending": "Yes" if flags.get("verification_pending") else "No",
-                    "Responsible Gaming": "Yes" if flags.get("responsible_gaming_flag") else "No",
-                    "Active Bonus": "Yes" if flags.get("has_active_bonus") else "No",
-                    "Risk Level": flags.get("risk_level", "?"),
-                }
-                for k, v in data.items():
-                    st.markdown(f"**{k}:** {v}")
-            else:
-                st.info("No customer context available.")
-
-    with right:
-        # Risk assessment
-        st.subheader("⚠️ Risk Assessment")
-        risk_html = (
-            _badge(risk.get("risk_level", "?"), _risk_color(risk.get("risk_level", "")))
-            + (_badge("Human Review Required", "red") if risk.get("requires_human_review") else _badge("Auto-OK", "green"))
-        )
-        st.markdown(risk_html, unsafe_allow_html=True)
-        for factor in risk.get("risk_factors", []):
-            st.markdown(f"- {factor}")
-
-        # Groundedness
-        if gc:
-            st.subheader("🔍 Groundedness")
-            grounded = gc.get("is_grounded", False)
-            conf = gc.get("confidence", 0)
-            st.markdown(
-                _badge("Grounded" if grounded else "Not Grounded", "green" if grounded else "red")
-                + f" Confidence: **{conf:.0%}**",
-                unsafe_allow_html=True,
-            )
-            for issue in gc.get("issues", []):
-                st.warning(issue)
-
-        # Recommendation
-        st.subheader("💡 Recommendation")
-        st.markdown(recommendation.get("recommended_action", "No recommendation."))
-        if recommendation.get("human_review_required"):
-            st.caption("⚠️ Human review required before acting.")
-
-    # Draft response
-    st.markdown("---")
-    st.subheader(f"✉️ Draft Response - tone: {draft.get('tone', '?')}")
-    st.markdown(
-        f"""<div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 4px;">
-        {draft.get('customer_message', 'No draft generated.')}
-        </div>""",
-        unsafe_allow_html=True,
-    )
-
-    # Approval section
+    # ── 1. Approval status + Recommendation (top priority) ──────────
     if draft.get("approval_required") or risk.get("requires_human_review"):
-        st.markdown("---")
         st.subheader("🔒 Approval Required")
         if draft.get("reason_approval_required"):
             st.caption(f"Reason: {draft['reason_approval_required']}")
 
         col_approve, col_reject, _ = st.columns([1, 1, 3])
-
         with col_approve:
             if st.button("✅ Approve", type="primary", use_container_width=True):
                 st.session_state.approved_action = "approved"
                 st.rerun()
-
         with col_reject:
             if st.button("❌ Reject", use_container_width=True):
                 st.session_state.approved_action = "rejected"
@@ -356,7 +261,84 @@ if result:
     else:
         st.success("✅ Auto-approved - no human review required.")
 
-    # Audit trail
+    # ── 2. Draft response ───────────────────────────────────────────
+    st.subheader(f"✉️ Draft Response - tone: {draft.get('tone', '?')}")
+    draft_text = draft.get("customer_message", "No draft generated.")
+    st.info(draft_text)
+
+    # ── 3. Classification badges ────────────────────────────────────
+    st.subheader("📋 Classification")
+    badges_html = (
+        _badge(classification.get("category", "?"), "blue")
+        + _badge(classification.get("urgency", "?"), _urgency_color(classification.get("urgency", "")))
+        + _badge(classification.get("sentiment", "?"), _sentiment_color(classification.get("sentiment", "")))
+    )
+    st.markdown(badges_html, unsafe_allow_html=True)
+    st.caption(classification.get("summary", ""))
+
+    # ── 4. Risk + Groundedness + Policy sources ──────────────────────
+    left, right = st.columns(2)
+
+    with left:
+        st.subheader("⚠️ Risk Assessment")
+        risk_html = (
+            _badge(risk.get("risk_level", "?"), _risk_color(risk.get("risk_level", "")))
+            + (
+                _badge("Human Review", "red")
+                if risk.get("requires_human_review")
+                else _badge("Auto-OK", "green")
+            )
+        )
+        st.markdown(risk_html, unsafe_allow_html=True)
+        for factor in risk.get("risk_factors", []):
+            st.markdown(f"- {factor}")
+
+        if gc:
+            st.markdown("")
+            grounded = gc.get("is_grounded", False)
+            conf = gc.get("confidence", 0)
+            st.markdown(
+                "**Groundedness:** "
+                + _badge("Grounded" if grounded else "Not Grounded", "green" if grounded else "red")
+                + f" ({conf:.0%} confidence)",
+                unsafe_allow_html=True,
+            )
+            for issue in gc.get("issues", []):
+                st.warning(issue)
+
+    with right:
+        st.subheader("� Policy Sources")
+        trail = result.get("audit_trail", [])
+        sources = []
+        for entry in trail:
+            if entry.get("step") == "retrieve_policy":
+                sources = entry.get("sources", [])
+                break
+        if sources:
+            for s in sources:
+                name = s.replace("_", " ").replace(".md", "").title()
+                st.markdown(f"- 📎 `{s}` - {name}")
+        else:
+            st.caption("No policies retrieved.")
+
+    # ── 5. Expandable details ───────────────────────────────────────
+    st.markdown("---")
+
+    with st.expander(" Customer Context", expanded=False):
+        if flags:
+            data = {
+                "Failed Withdrawals": flags.get("failed_withdrawal_count", 0),
+                "Account Locked": "Yes" if flags.get("account_locked") else "No",
+                "Verification Pending": "Yes" if flags.get("verification_pending") else "No",
+                "Responsible Gaming": "Yes" if flags.get("responsible_gaming_flag") else "No",
+                "Active Bonus": "Yes" if flags.get("has_active_bonus") else "No",
+                "Risk Level": flags.get("risk_level", "?"),
+            }
+            for k, v in data.items():
+                st.markdown(f"**{k}:** {v}")
+        else:
+            st.info("No customer context available.")
+
     with st.expander("📝 Audit Trail", expanded=False):
         trail = result.get("audit_trail", [])
         for entry in trail:

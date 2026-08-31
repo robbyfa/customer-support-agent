@@ -1,4 +1,4 @@
-"""Node name constants for the Customer Support Resolution Copilot graph."""
+"""Node name constants for the Customer Support Resolution Agent graph."""
 
 CLASSIFY_TICKET = "classify_ticket"
 RETRIEVE_POLICY = "retrieve_policy"

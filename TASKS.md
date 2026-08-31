@@ -1,4 +1,4 @@
-# Customer Support Resolution Copilot - Build Tasks
+# Customer Support Resolution Agent - Build Tasks
 
 > Component-by-component build plan. Each node is built end-to-end (model + chain + node + tests) before moving to the next. Graph assembly at the end.
 

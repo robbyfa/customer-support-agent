@@ -181,15 +181,15 @@
 
 ## Phase 3 - Evaluation
 
-### Task 14: Evaluation dataset and framework
+### Task 14: Evaluation dataset and framework ✅
 
-- [ ] Create `evals/dataset.py` - 20–25 eval cases covering all 6 issue types + edge cases
-- [ ] Helpers: `get_dataset()`, `get_by_category()`, `get_by_expected_review()`
-- [ ] Create `evals/evaluators.py` - 5 dimensions: classification accuracy, policy retrieval relevance, sensitive-case detection, response quality (LLM), keyword checks
-- [ ] Weighted aggregate: `evaluate_response()` with classification(0.25) + retrieval(0.2) + sensitivity(0.2) + response_quality(0.2) + keywords(0.15)
-- [ ] Create `evals/run_evals.py` - CLI runner with `--category`, `--question`, `--output` args, emoji-scored output, summary table
-- [ ] Write tests in `tests/test_evals.py` - dataset validation, evaluator unit tests, aggregate scoring
-- [ ] Verify: `uv run python -m evals.run_evals` runs full eval suite with summary report
+- [x] Create `evals/dataset.py` - 20–25 eval cases covering all 6 issue types + edge cases
+- [x] Helpers: `get_dataset()`, `get_by_category()`, `get_by_expected_review()`
+- [x] Create `evals/evaluators.py` - 5 dimensions: classification accuracy, policy retrieval relevance, sensitive-case detection, response quality (LLM), keyword checks
+- [x] Weighted aggregate: `evaluate_response()` with classification(0.25) + retrieval(0.2) + sensitivity(0.2) + response_quality(0.2) + keywords(0.15)
+- [x] Create `evals/run_evals.py` - CLI runner with `--category`, `--question`, `--output` args, emoji-scored output, summary table
+- [x] Write tests in `tests/test_evals.py` - dataset validation, evaluator unit tests, aggregate scoring
+- [x] Verify: `uv run python -m evals.run_evals` runs full eval suite with summary report
 
 ---
 
@@ -237,5 +237,5 @@
 | Phase 0 - Foundation | Tasks 1–4 | ✅ Complete |
 | Phase 1 - Components | Tasks 5–10 | ✅ Complete |
 | Phase 2 - Integration | Tasks 11–13 | ✅ Complete |
-| Phase 3 - Evaluation | Task 14 | ⬜ Not started |
+| Phase 3 - Evaluation | Task 14 | ✅ Complete |
 | Phase 4 - Polish | Tasks 15–18 | ⬜ Not started |

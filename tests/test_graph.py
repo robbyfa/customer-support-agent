@@ -518,3 +518,45 @@ class TestEndToEndGraph:
         assert "draft_response" in steps
         assert "approval_gate" in steps
         assert "final_response" in steps
+
+
+# ===========================================================================
+# Groundedness routing tests (no LLM needed)
+# ===========================================================================
+
+from graph.graph import _route_after_groundedness
+from graph.consts import APPROVAL_GATE, DRAFT_RESPONSE
+
+
+class TestGroundednessRouting:
+    def test_grounded_routes_to_approval(self):
+        state = {
+            "groundedness_check": {"is_grounded": True, "confidence": 0.95, "issues": []},
+            "draft_retries": 0,
+        }
+        assert _route_after_groundedness(state) == APPROVAL_GATE
+
+    def test_not_grounded_first_retry_routes_to_draft(self):
+        state = {
+            "groundedness_check": {"is_grounded": False, "confidence": 0.4, "issues": ["Unverified claim"]},
+            "draft_retries": 0,
+        }
+        assert _route_after_groundedness(state) == DRAFT_RESPONSE
+
+    def test_not_grounded_second_retry_routes_to_draft(self):
+        state = {
+            "groundedness_check": {"is_grounded": False, "confidence": 0.3, "issues": ["Still unverified"]},
+            "draft_retries": 1,
+        }
+        assert _route_after_groundedness(state) == DRAFT_RESPONSE
+
+    def test_not_grounded_max_retries_routes_to_approval(self):
+        state = {
+            "groundedness_check": {"is_grounded": False, "confidence": 0.2, "issues": ["Gave up"]},
+            "draft_retries": 2,
+        }
+        assert _route_after_groundedness(state) == APPROVAL_GATE
+
+    def test_missing_check_defaults_to_approval(self):
+        state = {"draft_retries": 0}
+        assert _route_after_groundedness(state) == APPROVAL_GATE

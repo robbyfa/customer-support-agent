@@ -112,23 +112,23 @@
 ### Task 9: Component - draft_response
 
 **Models:**
-- [ ] Create `models/recommendation.py` - `SupportRecommendation(BaseModel)`
-- [ ] Create `models/response.py` - `DraftResponse(BaseModel)` with `format_text()` method
-- [ ] Update `models/__init__.py` - export both models
+- [x] Create `models/recommendation.py` - `SupportRecommendation(BaseModel)`
+- [x] Create `models/response.py` - `DraftResponse(BaseModel)` with `format_text()` method
+- [x] Update `models/__init__.py` - export both models
 
 **Chains:**
-- [ ] Create `graph/chains/response_generator.py` - `response_chain = prompt | llm.with_structured_output(DraftResponse)`
-- [ ] Create `graph/chains/groundedness_checker.py` - `groundedness_chain` with `GroundednessCheck` model
-- [ ] Update `graph/chains/__init__.py`
+- [x] Create `graph/chains/response_generator.py` - `response_chain = prompt | llm.with_structured_output(DraftResponse)`
+- [x] Create `graph/chains/groundedness_checker.py` - `groundedness_chain` with `GroundednessCheck` model
+- [x] Update `graph/chains/__init__.py`
 
 **Node:**
-- [ ] Create `graph/nodes/draft_response.py` - `def draft_response(state) -> dict` returning draft_response, recommendation, audit_trail
-- [ ] Update `graph/nodes/__init__.py` - export draft_response
+- [x] Create `graph/nodes/draft_response.py` - `def draft_response(state) -> dict` returning draft_response, recommendation, audit_trail
+- [x] Update `graph/nodes/__init__.py` - export draft_response
 
 **Tests:**
-- [ ] Extend `tests/test_schemas.py` - SupportRecommendation and DraftResponse validation, format_text() output
-- [ ] Extend `tests/test_graph.py` - response chain with full context → approval_required=True for high-risk, empathetic tone for negative sentiment
-- [ ] Verify: `uv run pytest tests/test_schemas.py tests/test_graph.py -v -k "draft"` passes
+- [x] Extend `tests/test_schemas.py` - SupportRecommendation and DraftResponse validation, format_text() output
+- [x] Extend `tests/test_graph.py` - response chain with full context → approval_required=True for high-risk, empathetic tone for negative sentiment
+- [x] Verify: `uv run pytest tests/test_schemas.py tests/test_graph.py -v -k "draft"` passes
 
 ### Task 10: Component - approval_gate and final_response
 

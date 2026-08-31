@@ -204,3 +204,96 @@ class TestCustomerContextNode:
         assert "tickets" in ctx
         assert "bonuses" in ctx
         assert "flags" in ctx
+
+
+# ===========================================================================
+# draft_response node tests (Task 9)
+# ===========================================================================
+
+from graph.nodes.draft_response import draft_response
+
+
+@requires_api_key
+@llm
+class TestDraftResponseNode:
+    def test_high_risk_withdrawal_requires_approval(self):
+        state = {
+            "customer_message": "I tried to withdraw €300 three times and it keeps failing.",
+            "classification": {
+                "category": "withdrawal_issue",
+                "urgency": "high",
+                "sentiment": "negative",
+                "summary": "Customer reports 3 failed withdrawals.",
+                "requires_human_review": True,
+                "sensitive_case": False,
+            },
+            "policy_context": [
+                "Repeated failed withdrawals must be treated as high priority. "
+                "Support agents must not tell the customer that the withdrawal "
+                "is resolved unless payment status has been confirmed."
+            ],
+            "customer_context": {
+                "profile": {"customer_id": "CUST-1001", "name": "Maria Gonzalez"},
+                "flags": {"failed_withdrawal_count": 3},
+            },
+            "risk_assessment": {
+                "risk_level": "high",
+                "requires_human_review": True,
+                "risk_factors": ["3 failed withdrawals"],
+            },
+            "audit_trail": [],
+        }
+        result = draft_response(state)
+
+        assert "draft_response" in result
+        assert "recommendation" in result
+        dr = result["draft_response"]
+        assert dr["approval_required"] is True
+        assert dr["tone"] in ("empathetic", "formal")
+
+    def test_low_risk_returns_draft(self):
+        state = {
+            "customer_message": "When will my deposit show up?",
+            "classification": {
+                "category": "deposit_issue",
+                "urgency": "medium",
+                "sentiment": "neutral",
+                "summary": "Customer asks about deposit timing.",
+                "requires_human_review": False,
+                "sensitive_case": False,
+            },
+            "policy_context": [
+                "Bank transfer deposits take 1-3 business days."
+            ],
+            "customer_context": {
+                "profile": {"customer_id": "CUST-1002", "name": "James O'Brien"},
+                "flags": {},
+            },
+            "risk_assessment": {
+                "risk_level": "low",
+                "requires_human_review": False,
+                "risk_factors": [],
+            },
+            "audit_trail": [],
+        }
+        result = draft_response(state)
+
+        dr = result["draft_response"]
+        assert isinstance(dr["customer_message"], str)
+        assert len(dr["customer_message"]) > 0
+
+    def test_audit_trail_appended(self):
+        state = {
+            "customer_message": "I have a bonus question.",
+            "classification": {"category": "bonus_issue", "urgency": "low", "sentiment": "neutral"},
+            "policy_context": ["Wagering requirements must be met."],
+            "customer_context": {"profile": {}, "flags": {}},
+            "risk_assessment": {"risk_level": "low", "requires_human_review": False},
+            "audit_trail": [{"step": "risk_check"}],
+        }
+        result = draft_response(state)
+
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        assert trail[1]["step"] == "draft_response"
+        assert "tone" in trail[1]

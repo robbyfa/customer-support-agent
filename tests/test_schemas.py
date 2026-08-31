@@ -148,3 +148,148 @@ class TestTicketClassificationSerialization:
         data = tc.model_dump()
         tc2 = TicketClassification(**data)
         assert tc == tc2
+
+
+# ===========================================================================
+# SupportRecommendation (Task 9)
+# ===========================================================================
+
+from models.recommendation import SupportRecommendation
+
+
+class TestSupportRecommendationInstantiation:
+    def test_valid_full(self):
+        r = SupportRecommendation(
+            recommended_action="Escalate to Payments Operations",
+            reason="3 failed withdrawals per policy",
+            relevant_policy_sources=["withdrawal_policy.md"],
+            missing_information=["Payment provider error details"],
+            human_review_required=True,
+        )
+        assert r.recommended_action == "Escalate to Payments Operations"
+        assert len(r.relevant_policy_sources) == 1
+
+    def test_defaults_for_lists(self):
+        r = SupportRecommendation(
+            recommended_action="Standard response",
+            reason="Low-risk inquiry",
+            human_review_required=False,
+        )
+        assert r.relevant_policy_sources == []
+        assert r.missing_information == []
+
+
+class TestSupportRecommendationValidation:
+    def test_missing_required_raises(self):
+        with pytest.raises(ValidationError):
+            SupportRecommendation(
+                recommended_action="Do something",
+                # reason missing
+                human_review_required=False,
+            )
+
+
+class TestSupportRecommendationSerialization:
+    def test_round_trip(self):
+        r = SupportRecommendation(
+            recommended_action="Escalate",
+            reason="High risk",
+            relevant_policy_sources=["escalation_policy.md"],
+            missing_information=[],
+            human_review_required=True,
+        )
+        data = r.model_dump()
+        r2 = SupportRecommendation(**data)
+        assert r == r2
+
+
+# ===========================================================================
+# DraftResponse (Task 9)
+# ===========================================================================
+
+from models.response import DraftResponse
+
+
+class TestDraftResponseInstantiation:
+    def test_valid_full(self):
+        d = DraftResponse(
+            customer_message="We are looking into your issue.",
+            tone="empathetic",
+            should_send=False,
+            approval_required=True,
+            reason_approval_required="High-risk case",
+        )
+        assert d.tone == "empathetic"
+        assert d.approval_required is True
+
+    def test_optional_reason(self):
+        d = DraftResponse(
+            customer_message="Your deposit has been credited.",
+            tone="neutral",
+            should_send=True,
+            approval_required=False,
+        )
+        assert d.reason_approval_required is None
+
+
+class TestDraftResponseValidation:
+    def test_invalid_tone_raises(self):
+        with pytest.raises(ValidationError):
+            DraftResponse(
+                customer_message="Hello",
+                tone="casual",
+                should_send=True,
+                approval_required=False,
+            )
+
+    def test_all_tones(self):
+        for tone in ["neutral", "empathetic", "formal"]:
+            d = DraftResponse(
+                customer_message="Test",
+                tone=tone,
+                should_send=True,
+                approval_required=False,
+            )
+            assert d.tone == tone
+
+
+class TestDraftResponseFormatText:
+    def test_format_includes_tone(self):
+        d = DraftResponse(
+            customer_message="We are investigating.",
+            tone="empathetic",
+            should_send=False,
+            approval_required=True,
+            reason_approval_required="Sensitive case",
+        )
+        text = d.format_text()
+        assert "Tone: empathetic" in text
+        assert "Approval required: Yes" in text
+        assert "Reason: Sensitive case" in text
+        assert "We are investigating." in text
+
+    def test_format_without_reason(self):
+        d = DraftResponse(
+            customer_message="All good.",
+            tone="neutral",
+            should_send=True,
+            approval_required=False,
+        )
+        text = d.format_text()
+        assert "Approval required: No" in text
+        assert "Reason:" not in text
+        assert "All good." in text
+
+
+class TestDraftResponseSerialization:
+    def test_round_trip(self):
+        d = DraftResponse(
+            customer_message="Test message",
+            tone="formal",
+            should_send=False,
+            approval_required=True,
+            reason_approval_required="Compliance hold",
+        )
+        data = d.model_dump()
+        d2 = DraftResponse(**data)
+        assert d == d2

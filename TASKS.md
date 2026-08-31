@@ -28,28 +28,28 @@
 - [x] Write tests in `tests/test_tools.py` (initial) — verify counts, known customer lookup, unknown customer returns None
 - [x] Verify: `uv run pytest tests/test_tools.py -v` passes
 
-### Task 3: Policy documents and RAG vector store
+### Task 3: Policy documents and RAG vector store ✅
 
-- [ ] Create `data/policies/withdrawal_policy.md`
-- [ ] Create `data/policies/deposit_policy.md`
-- [ ] Create `data/policies/bonus_policy.md`
-- [ ] Create `data/policies/login_policy.md`
-- [ ] Create `data/policies/account_verification_policy.md`
-- [ ] Create `data/policies/responsible_gaming_policy.md`
-- [ ] Create `data/policies/escalation_policy.md`
-- [ ] Create `storage/vector_store.py` — `PolicyVectorStore` class (ingest_policies, search, reset) following SportVectorStore pattern
-- [ ] Write tests in `tests/test_policy_retrieval.py` — search "failed withdrawal" → withdrawal_policy.md, search "self-exclusion" → responsible_gaming_policy.md
-- [ ] Verify: `uv run pytest tests/test_policy_retrieval.py -v` passes
+- [x] Create `data/policies/withdrawal_policy.md`
+- [x] Create `data/policies/deposit_policy.md`
+- [x] Create `data/policies/bonus_policy.md`
+- [x] Create `data/policies/login_policy.md`
+- [x] Create `data/policies/account_verification_policy.md`
+- [x] Create `data/policies/responsible_gaming_policy.md`
+- [x] Create `data/policies/escalation_policy.md`
+- [x] Create `storage/vector_store.py` — `PolicyVectorStore` class (ingest_policies, search, reset) following SportVectorStore pattern
+- [x] Write tests in `tests/test_policy_retrieval.py` — search "failed withdrawal" → withdrawal_policy.md, search "self-exclusion" → responsible_gaming_policy.md
+- [x] Verify: `uv run pytest tests/test_policy_retrieval.py -v` passes
 
-### Task 4: Tools — customer, ticket, and policy tools with registry
+### Task 4: Tools — customer, ticket, and policy tools with registry ✅
 
-- [ ] Create `tools/registry.py` — `_vector_store` global, `configure()`, `get_vector_store()` with RuntimeError guard
-- [ ] Create `tools/customer_tools.py` — `@tool get_customer_profile()`, `@tool get_recent_transactions()`, `@tool get_bonus_status()`
-- [ ] Create `tools/ticket_tools.py` — `@tool get_ticket_history()`
-- [ ] Create `tools/policy_tools.py` — `@tool search_policy_documents()`
-- [ ] Create `tools/__init__.py` — `get_all_tools()`, re-export `configure`
-- [ ] Extend `tests/test_tools.py` — test each tool with known customer IDs, unknown customer, policy search
-- [ ] Verify: `uv run pytest tests/test_tools.py -v` passes
+- [x] Create `tools/registry.py` — `_vector_store` global, `configure()`, `get_vector_store()` with RuntimeError guard
+- [x] Create `tools/customer_tools.py` — `@tool get_customer_profile()`, `@tool get_recent_transactions()`, `@tool get_bonus_status()`
+- [x] Create `tools/ticket_tools.py` — `@tool get_ticket_history()`
+- [x] Create `tools/policy_tools.py` — `@tool search_policy_documents()`
+- [x] Create `tools/__init__.py` — `get_all_tools()`, re-export `configure`
+- [x] Extend `tests/test_tools.py` — test each tool with known customer IDs, unknown customer, policy search
+- [x] Verify: `uv run pytest tests/test_tools.py -v` passes
 
 ---
 
@@ -232,7 +232,7 @@
 
 | Phase | Tasks | Status |
 |-------|-------|--------|
-| Phase 0 — Foundation | Tasks 1–4 | 🟡 In progress (Tasks 1–2 done) |
+| Phase 0 — Foundation | Tasks 1–4 | ✅ Complete |
 | Phase 1 — Components | Tasks 5–10 | ⬜ Not started |
 | Phase 2 — Integration | Tasks 11–13 | ⬜ Not started |
 | Phase 3 — Evaluation | Task 14 | ⬜ Not started |

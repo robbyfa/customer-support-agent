@@ -140,3 +140,130 @@ class TestCustomerBonus:
 
     def test_unknown_customer_returns_empty_list(self):
         assert get_customer_bonus("CUST-9999") == []
+
+
+# ===========================================================================
+# LangChain @tool tests (Task 4)
+# ===========================================================================
+
+import pytest
+
+from storage.vector_store import PolicyVectorStore
+from tools import configure, get_all_tools
+from tools.customer_tools import get_bonus_status, get_customer_profile, get_recent_transactions
+from tools.policy_tools import search_policy_documents
+from tools.ticket_tools import get_ticket_history
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _setup_registry():
+    """Configure the tool registry with an ingested vector store."""
+    vs = PolicyVectorStore(collection_name="test_tools")
+    vs.ingest_policies()
+    configure(vs)
+
+
+# ---------------------------------------------------------------------------
+# get_all_tools
+# ---------------------------------------------------------------------------
+
+
+class TestGetAllTools:
+    def test_returns_five_tools(self):
+        tools = get_all_tools()
+        assert len(tools) == 5
+
+    def test_all_tools_have_name(self):
+        for t in get_all_tools():
+            assert hasattr(t, "name") and t.name
+
+
+# ---------------------------------------------------------------------------
+# get_customer_profile tool
+# ---------------------------------------------------------------------------
+
+
+class TestGetCustomerProfileTool:
+    def test_known_customer(self):
+        result = get_customer_profile.invoke({"customer_id": "CUST-1001"})
+        assert result["customer_id"] == "CUST-1001"
+        assert result["name"] == "Maria Gonzalez"
+
+    def test_unknown_customer(self):
+        result = get_customer_profile.invoke({"customer_id": "CUST-9999"})
+        assert "error" in result
+
+
+# ---------------------------------------------------------------------------
+# get_recent_transactions tool
+# ---------------------------------------------------------------------------
+
+
+class TestGetRecentTransactionsTool:
+    def test_known_customer_transactions(self):
+        result = get_recent_transactions.invoke({"customer_id": "CUST-1001"})
+        assert result["total_transactions"] == 5
+        assert len(result["transactions"]) == 5
+
+    def test_unknown_customer(self):
+        result = get_recent_transactions.invoke({"customer_id": "CUST-9999"})
+        assert "error" in result
+
+
+# ---------------------------------------------------------------------------
+# get_bonus_status tool
+# ---------------------------------------------------------------------------
+
+
+class TestGetBonusStatusTool:
+    def test_customer_with_active_bonus(self):
+        result = get_bonus_status.invoke({"customer_id": "CUST-1004"})
+        assert result["has_active_bonus"] is True
+        assert len(result["active_bonuses"]) == 1
+
+    def test_customer_without_active_bonus(self):
+        result = get_bonus_status.invoke({"customer_id": "CUST-1001"})
+        assert result["has_active_bonus"] is False
+
+    def test_unknown_customer(self):
+        result = get_bonus_status.invoke({"customer_id": "CUST-9999"})
+        assert "error" in result
+
+
+# ---------------------------------------------------------------------------
+# get_ticket_history tool
+# ---------------------------------------------------------------------------
+
+
+class TestGetTicketHistoryTool:
+    def test_known_customer_tickets(self):
+        result = get_ticket_history.invoke({"customer_id": "CUST-1001"})
+        assert result["total_tickets"] == 3
+
+    def test_unknown_customer(self):
+        result = get_ticket_history.invoke({"customer_id": "CUST-9999"})
+        assert "error" in result
+
+
+# ---------------------------------------------------------------------------
+# search_policy_documents tool
+# ---------------------------------------------------------------------------
+
+
+class TestSearchPolicyDocumentsTool:
+    def test_withdrawal_query(self):
+        result = search_policy_documents.invoke({"query": "failed withdrawal"})
+        sources = [r["source"] for r in result["results"]]
+        assert "withdrawal_policy.md" in sources
+
+    def test_responsible_gaming_query(self):
+        result = search_policy_documents.invoke({"query": "self-exclusion request"})
+        sources = [r["source"] for r in result["results"]]
+        assert "responsible_gaming_policy.md" in sources
+
+    def test_returns_expected_structure(self):
+        result = search_policy_documents.invoke({"query": "deposit"})
+        assert "query" in result
+        assert "total_results" in result
+        assert "results" in result
+        assert result["total_results"] > 0

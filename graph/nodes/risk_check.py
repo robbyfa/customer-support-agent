@@ -1,4 +1,4 @@
-"""Node: risk_check — rule-based risk assessment combining classification,
+"""Node: risk_check - rule-based risk assessment combining classification,
 customer context, and policy signals to determine risk level and whether
 human review is required.
 """
@@ -40,7 +40,7 @@ def risk_check(state: GraphState) -> dict[str, Any]:
     if category == "responsible_gaming":
         risk_level = "high"
         requires_human = True
-        risk_factors.append("Responsible gaming case — mandatory human review")
+        risk_factors.append("Responsible gaming case - mandatory human review")
 
     # --- Rule 2: Responsible gaming flag on customer profile ---
     if flags.get("responsible_gaming_flag"):
@@ -80,7 +80,7 @@ def risk_check(state: GraphState) -> dict[str, Any]:
             risk_factors.append("Medium urgency with negative sentiment")
 
     if not risk_factors:
-        risk_factors.append("Standard case — no elevated risk factors detected")
+        risk_factors.append("Standard case - no elevated risk factors detected")
 
     risk_assessment = {
         "risk_level": risk_level,

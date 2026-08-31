@@ -1,4 +1,4 @@
-"""Node: customer_context — aggregates customer profile, transactions,
+"""Node: customer_context - aggregates customer profile, transactions,
 tickets, and bonus data into a single context dict.
 """
 

@@ -1,6 +1,6 @@
 """Tests for rule-based risk assessment (graph/nodes/risk_check.py).
 
-Pure unit tests — no LLM calls needed.
+Pure unit tests - no LLM calls needed.
 """
 
 from graph.nodes.risk_check import risk_check

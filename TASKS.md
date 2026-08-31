@@ -148,12 +148,12 @@
 
 ## Phase 2 - Integration
 
-### Task 11: LangGraph workflow assembly
+### Task 11: LangGraph workflow assembly ✅
 
-- [ ] Create `graph/graph.py` - `build_graph()` wiring all 7 nodes in linear flow (START → classify → retrieve → context → risk → draft → approval → final → END)
-- [ ] Module-level `app = build_graph()` singleton
-- [ ] Full end-to-end integration test in `tests/test_graph.py` - invoke with "failed withdrawal" + CUST-1001, verify final_output has all expected keys and correct values
-- [ ] Verify: `uv run pytest tests/test_graph.py -v` passes (all tests)
+- [x] Create `graph/graph.py` - `build_graph()` wiring all 7 nodes in linear flow (START → classify → retrieve → context → risk → draft → approval → final → END)
+- [x] Module-level `app = build_graph()` singleton
+- [x] Full end-to-end integration test in `tests/test_graph.py` - invoke with "failed withdrawal" + CUST-1001, verify final_output has all expected keys and correct values
+- [x] Verify: `uv run pytest tests/test_graph.py -v` passes (all tests)
 
 ### Task 12: CLI entry point (main.py)
 

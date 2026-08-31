@@ -444,3 +444,77 @@ class TestFinalResponseNode:
         assert len(trail) == 2
         assert trail[1]["step"] == "final_response"
         assert trail[1]["status"] == "approved"
+
+
+# ===========================================================================
+# End-to-end integration test (Task 11)
+# ===========================================================================
+
+from storage.vector_store import PolicyVectorStore
+from tools.registry import configure as configure_registry
+
+
+@requires_api_key
+@llm
+class TestEndToEndGraph:
+    @pytest.fixture(autouse=True)
+    def _setup_stores(self):
+        """Ensure vector store is configured for the full graph run."""
+        vs = PolicyVectorStore(collection_name="test_e2e")
+        vs.ingest_policies()
+        configure_registry(vs)
+
+    def test_failed_withdrawal_full_run(self):
+        from graph.graph import build_graph
+
+        app = build_graph()
+        result = app.invoke(
+            {
+                "customer_message": (
+                    "I tried to withdraw €300 three times and it keeps failing. "
+                    "Nobody is helping me."
+                ),
+                "customer_id": "CUST-1001",
+                "audit_trail": [],
+            }
+        )
+
+        # final_output should exist
+        fo = result["final_output"]
+        assert fo is not None
+
+        # Classification
+        assert fo["classification"]["category"] == "withdrawal_issue"
+        assert fo["classification"]["urgency"] == "high"
+        assert fo["classification"]["sentiment"] == "negative"
+
+        # Policy context retrieved
+        assert len(fo["policy_context"]) > 0
+
+        # Customer context populated
+        ctx = fo["customer_context"]
+        assert "error" not in ctx
+        assert ctx["flags"]["failed_withdrawal_count"] == 3
+
+        # Risk assessment
+        assert fo["risk_assessment"]["risk_level"] == "high"
+        assert fo["risk_assessment"]["requires_human_review"] is True
+
+        # Draft response exists
+        assert fo["draft_response"]["customer_message"]
+        assert fo["draft_response"]["tone"] in ("empathetic", "formal")
+
+        # High-risk → not approved
+        assert fo["approved"] is False
+        assert fo["status"] == "pending_review"
+
+        # Audit trail has entries for all 7 nodes
+        trail = result["audit_trail"]
+        steps = [e["step"] for e in trail]
+        assert "classify_ticket" in steps
+        assert "retrieve_policy" in steps
+        assert "customer_context" in steps
+        assert "risk_check" in steps
+        assert "draft_response" in steps
+        assert "approval_gate" in steps
+        assert "final_response" in steps

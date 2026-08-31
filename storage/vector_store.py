@@ -1,17 +1,36 @@
 """Policy vector store for RAG retrieval using ChromaDB.
 
-Ingests markdown policy documents, chunks them, and provides
-semantic search over the policy corpus.
+Ingests markdown policy documents by section (heading-aware chunking),
+stores category metadata for filtered retrieval, and provides semantic search.
 """
 
 import hashlib
+import re
 from pathlib import Path
 
 import chromadb
 from chromadb.config import Settings
 
-
 _DEFAULT_POLICIES_DIR = Path(__file__).resolve().parent.parent / "data" / "policies"
+
+# Map policy filenames to classification categories for metadata filtering.
+_SOURCE_TO_CATEGORY: dict[str, list[str]] = {
+    "withdrawal_policy.md": ["withdrawal_issue"],
+    "deposit_policy.md": ["deposit_issue"],
+    "bonus_policy.md": ["bonus_issue"],
+    "login_policy.md": ["login_issue"],
+    "account_verification_policy.md": ["account_verification"],
+    "responsible_gaming_policy.md": ["responsible_gaming"],
+    "escalation_policy.md": [
+        "withdrawal_issue",
+        "deposit_issue",
+        "login_issue",
+        "bonus_issue",
+        "account_verification",
+        "responsible_gaming",
+        "other",
+    ],
+}
 
 
 class PolicyVectorStore:
@@ -48,10 +67,11 @@ class PolicyVectorStore:
     def ingest_policies(
         self,
         policies_dir: Path | str | None = None,
-        chunk_size: int = 500,
-        chunk_overlap: int = 50,
     ) -> int:
-        """Read all .md files from *policies_dir*, chunk them, and upsert.
+        """Read all .md files, split by markdown sections, and upsert.
+
+        Each chunk corresponds to a complete markdown section (heading +
+        its body) so content is never cut mid-sentence.
 
         Returns the number of chunks ingested.
         """
@@ -63,15 +83,23 @@ class PolicyVectorStore:
 
         for md_file in sorted(policies_dir.glob("*.md")):
             text = md_file.read_text(encoding="utf-8")
-            chunks = self._split_text(text, chunk_size, chunk_overlap)
+            sections = self._split_by_sections(text)
+            categories = _SOURCE_TO_CATEGORY.get(md_file.name, ["other"])
+            # ChromaDB metadata values must be str/int/float/bool
+            category_str = ",".join(categories)
 
-            for idx, chunk in enumerate(chunks):
+            for idx, (heading, body) in enumerate(sections):
+                # Prefix chunk with source and section for context
+                chunk = f"Source: {md_file.name}\nSection: {heading}\n\n{body}"
                 doc_id = self._make_id(md_file.name, idx)
+
                 documents.append(chunk)
                 metadatas.append(
                     {
                         "source": md_file.name,
+                        "section": heading,
                         "chunk_index": idx,
+                        "categories": category_str,
                     }
                 )
                 ids.append(doc_id)
@@ -93,31 +121,35 @@ class PolicyVectorStore:
         self,
         query: str,
         n_results: int = 3,
+        category: str | None = None,
     ) -> list[dict]:
         """Return the top-*n_results* chunks matching *query*.
 
-        Each result dict contains: content, source, chunk_index, score.
+        If *category* is provided, results are filtered to chunks from
+        policies mapped to that category. Falls back to unfiltered search
+        if the filtered search returns no results.
+
+        Each result dict contains: content, source, section, chunk_index, score.
         """
+        where_filter = None
+        if category:
+            where_filter = {"categories": {"$contains": category}}
+
         results = self._collection.query(
             query_texts=[query],
             n_results=n_results,
+            where=where_filter,
         )
 
-        output: list[dict] = []
-        # results is a dict with parallel lists keyed by the batch index
-        for doc, meta, distance in zip(
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0],
-        ):
-            output.append(
-                {
-                    "content": doc,
-                    "source": meta["source"],
-                    "chunk_index": meta["chunk_index"],
-                    "score": 1 - distance,  # cosine distance → similarity
-                }
+        output = self._parse_results(results)
+
+        # Fallback: if category filter returned nothing, try unfiltered
+        if not output and category:
+            results = self._collection.query(
+                query_texts=[query],
+                n_results=n_results,
             )
+            output = self._parse_results(results)
 
         return output
 
@@ -127,9 +159,10 @@ class PolicyVectorStore:
 
     def reset(self) -> None:
         """Delete the collection and recreate it (empty)."""
-        self._client.delete_collection(self._collection.name)
+        name = self._collection.name
+        self._client.delete_collection(name)
         self._collection = self._client.get_or_create_collection(
-            name="policies",
+            name=name,
             metadata={"hnsw:space": "cosine"},
         )
 
@@ -138,21 +171,61 @@ class PolicyVectorStore:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _split_text(
-        text: str,
-        chunk_size: int = 500,
-        chunk_overlap: int = 50,
-    ) -> list[str]:
-        """Split *text* into overlapping chunks by character count."""
-        chunks: list[str] = []
-        start = 0
-        while start < len(text):
-            end = start + chunk_size
-            chunk = text[start:end].strip()
-            if chunk:
-                chunks.append(chunk)
-            start += chunk_size - chunk_overlap
-        return chunks
+    def _split_by_sections(text: str) -> list[tuple[str, str]]:
+        """Split markdown text into (heading, body) pairs.
+
+        Splits on ## headings. The document title (# heading) becomes
+        the first section. Sections without a heading get "Introduction".
+        """
+        # Split on lines that start with ## (but not ### which is a sub-section)
+        # We keep all heading levels to get granular sections.
+        pattern = r"^(#{1,3})\s+(.+)$"
+        sections: list[tuple[str, str]] = []
+        current_heading = "Introduction"
+        current_lines: list[str] = []
+
+        for line in text.split("\n"):
+            match = re.match(pattern, line)
+            if match:
+                # Save previous section
+                body = "\n".join(current_lines).strip()
+                if body:
+                    sections.append((current_heading, body))
+                current_heading = match.group(2).strip()
+                current_lines = []
+            else:
+                current_lines.append(line)
+
+        # Save the last section
+        body = "\n".join(current_lines).strip()
+        if body:
+            sections.append((current_heading, body))
+
+        return sections
+
+    @staticmethod
+    def _parse_results(results: dict) -> list[dict]:
+        """Convert ChromaDB query results to a list of dicts."""
+        output: list[dict] = []
+        if not results["documents"] or not results["documents"][0]:
+            return output
+
+        for doc, meta, distance in zip(
+            results["documents"][0],
+            results["metadatas"][0],
+            results["distances"][0],
+        ):
+            output.append(
+                {
+                    "content": doc,
+                    "source": meta["source"],
+                    "section": meta.get("section", ""),
+                    "chunk_index": meta["chunk_index"],
+                    "score": 1 - distance,
+                }
+            )
+
+        return output
 
     @staticmethod
     def _make_id(filename: str, chunk_index: int) -> str:

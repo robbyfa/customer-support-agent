@@ -1,8 +1,8 @@
 """Node: manual_review_response - fallback when the draft response fails
 groundedness checks after all retries.
 
-Replaces the ungrounded draft with a safe, templated response that
-flags the case for manual review without making policy claims.
+Replaces the ungrounded draft AND the stale recommendation with safe
+content flagged for manual review.
 """
 
 from datetime import datetime, timezone
@@ -12,20 +12,21 @@ from graph.state import GraphState
 
 
 _MANUAL_REVIEW_TEMPLATE = (
-    "Thank you for contacting us. Your case has been flagged for "
-    "review by a specialist. A member of our team will follow up "
-    "with you shortly. We appreciate your patience."
+    "Thank you for contacting us. Your case will be reviewed by a "
+    "specialist. A member of our team will follow up with you shortly. "
+    "We appreciate your patience."
 )
 
 
 def manual_review_response(state: GraphState) -> dict[str, Any]:
-    """Replace the ungrounded draft with a safe manual-review message.
+    """Replace the ungrounded draft and stale recommendation.
 
     Sets approval_required=True so the case always goes through the
     approval gate as pending review.
     """
     classification = state.get("classification", {})
     risk = state.get("risk_assessment", {})
+    gc = state.get("groundedness_check", {})
 
     draft = {
         "customer_message": _MANUAL_REVIEW_TEMPLATE,
@@ -38,6 +39,20 @@ def manual_review_response(state: GraphState) -> dict[str, Any]:
         ),
     }
 
+    # Replace the stale recommendation with a rejected status
+    recommendation = {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": (
+            f"Groundedness check failed: {'; '.join(gc.get('issues', []))}"
+            if gc.get("issues")
+            else "Draft could not be verified against policy context."
+        ),
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": True,
+        "status": "rejected_by_groundedness_check",
+    }
+
     audit_entry = {
         "step": "manual_review_response",
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -48,5 +63,6 @@ def manual_review_response(state: GraphState) -> dict[str, Any]:
 
     return {
         "draft_response": draft,
+        "recommendation": recommendation,
         "audit_trail": state.get("audit_trail", []) + [audit_entry],
     }

@@ -1,15 +1,19 @@
 """Node: final_response - assembles all state pieces into the final
-output presented to the support agent.
+output presented to the support agent, with PII masked in logs.
 """
 
 from datetime import datetime, timezone
 from typing import Any
 
 from graph.state import GraphState
+from storage.pii import mask_customer_context
 
 
 def final_response(state: GraphState) -> dict[str, Any]:
     """Assemble the final copilot output from all accumulated state.
+
+    PII is masked in the customer_context before inclusion in the
+    final output to minimise exposure in logs and audit trails.
 
     Returns:
     - final_output: dict with all sections the support agent needs
@@ -21,12 +25,16 @@ def final_response(state: GraphState) -> dict[str, Any]:
     recommendation = state.get("recommendation", {})
     approved = state.get("approved")
 
+    # Mask PII in customer context for the final output
+    raw_context = state.get("customer_context", {})
+    masked_context = mask_customer_context(raw_context)
+
     final_output = {
         "customer_message": state.get("customer_message", ""),
         "customer_id": state.get("customer_id"),
         "classification": classification,
         "policy_context": state.get("policy_context", []),
-        "customer_context": state.get("customer_context", {}),
+        "customer_context": masked_context,
         "risk_assessment": risk_assessment,
         "recommendation": recommendation,
         "draft_response": draft,

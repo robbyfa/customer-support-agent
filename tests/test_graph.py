@@ -651,7 +651,7 @@ class TestManualReviewResponse:
         }
         result = manual_review_response(state)
         draft = result["draft_response"]
-        assert "flagged for review" in draft["customer_message"]
+        assert "will be reviewed" in draft["customer_message"]
         assert draft["approval_required"] is True
         assert draft["tone"] == "formal"
 

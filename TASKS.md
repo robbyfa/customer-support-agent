@@ -94,20 +94,20 @@
 - [x] Extend `tests/test_graph.py` - CUST-1001 returns 3 failed withdrawals, empty customer_id returns error, unknown ID returns error
 - [x] Verify: `uv run pytest tests/test_graph.py -v -k "customer_context"` passes
 
-### Task 8: Component - risk_check
+### Task 8: Component - risk_check ✅
 
 **Node:**
-- [ ] Create `graph/nodes/risk_check.py` - `def risk_check(state) -> dict` with rule-based risk logic, returning risk_assessment, audit_trail
-- [ ] Update `graph/nodes/__init__.py` - export risk_check
+- [x] Create `graph/nodes/risk_check.py` - `def risk_check(state) -> dict` with rule-based risk logic, returning risk_assessment, audit_trail
+- [x] Update `graph/nodes/__init__.py` - export risk_check
 
 **Tests:**
-- [ ] Create `tests/test_risk_rules.py` - test scenarios:
-  - [ ] Withdrawal + 3 failures + negative → high risk + human review
-  - [ ] Login + neutral → low/medium risk, no human review
-  - [ ] Responsible gaming → always high risk + human review
-  - [ ] Negative + high urgency → elevated risk
-  - [ ] sensitive_case=True → human review required
-- [ ] Verify: `uv run pytest tests/test_risk_rules.py -v` passes
+- [x] Create `tests/test_risk_rules.py` - test scenarios:
+  - [x] Withdrawal + 3 failures + negative → high risk + human review
+  - [x] Login + neutral → low/medium risk, no human review
+  - [x] Responsible gaming → always high risk + human review
+  - [x] Negative + high urgency → elevated risk
+  - [x] sensitive_case=True → human review required
+- [x] Verify: `uv run pytest tests/test_risk_rules.py -v` passes
 
 ### Task 9: Component - draft_response
 

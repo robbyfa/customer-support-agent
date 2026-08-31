@@ -84,15 +84,15 @@
 - [x] Extend `tests/test_policy_retrieval.py` - test node with withdrawal_issue state → withdrawal_policy.md content, responsible_gaming state → responsible_gaming_policy.md content
 - [x] Verify: `uv run pytest tests/test_policy_retrieval.py -v` passes
 
-### Task 7: Component - customer_context
+### Task 7: Component - customer_context ✅
 
 **Node:**
-- [ ] Create `graph/nodes/customer_context.py` - `def get_customer_context(state) -> dict` returning customer_context (profile, transactions, tickets, bonus, flags), audit_trail
-- [ ] Update `graph/nodes/__init__.py` - export get_customer_context
+- [x] Create `graph/nodes/customer_context.py` - `def get_customer_context(state) -> dict` returning customer_context (profile, transactions, tickets, bonus, flags), audit_trail
+- [x] Update `graph/nodes/__init__.py` - export get_customer_context
 
 **Tests:**
-- [ ] Extend `tests/test_graph.py` - CUST-1001 returns 3 failed withdrawals, empty customer_id returns error, unknown ID returns error
-- [ ] Verify: `uv run pytest tests/test_graph.py -v -k "customer_context"` passes
+- [x] Extend `tests/test_graph.py` - CUST-1001 returns 3 failed withdrawals, empty customer_id returns error, unknown ID returns error
+- [x] Verify: `uv run pytest tests/test_graph.py -v -k "customer_context"` passes
 
 ### Task 8: Component - risk_check
 

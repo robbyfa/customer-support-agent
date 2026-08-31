@@ -114,3 +114,93 @@ class TestClassifyTicketNode:
         assert trail[1]["step"] == "classify_ticket"
         assert "timestamp" in trail[1]
         assert "category" in trail[1]
+
+
+# ===========================================================================
+# customer_context node tests (Task 7)
+# ===========================================================================
+
+from graph.nodes.customer_context import get_customer_context
+
+
+class TestCustomerContextNode:
+    def test_cust_1001_has_three_failed_withdrawals(self):
+        state = {"customer_id": "CUST-1001", "audit_trail": []}
+        result = get_customer_context(state)
+
+        ctx = result["customer_context"]
+        assert "error" not in ctx
+        assert ctx["flags"]["failed_withdrawal_count"] == 3
+        assert ctx["flags"]["has_failed_withdrawals"] is True
+        assert len(ctx["transactions"]) == 5
+        assert len(ctx["tickets"]) == 3
+
+    def test_cust_1003_account_locked(self):
+        state = {"customer_id": "CUST-1003", "audit_trail": []}
+        result = get_customer_context(state)
+
+        ctx = result["customer_context"]
+        assert ctx["flags"]["account_locked"] is True
+
+    def test_cust_1004_has_active_bonus(self):
+        state = {"customer_id": "CUST-1004", "audit_trail": []}
+        result = get_customer_context(state)
+
+        ctx = result["customer_context"]
+        assert ctx["flags"]["has_active_bonus"] is True
+        assert len(ctx["bonuses"]) == 1
+
+    def test_cust_1005_verification_pending(self):
+        state = {"customer_id": "CUST-1005", "audit_trail": []}
+        result = get_customer_context(state)
+
+        ctx = result["customer_context"]
+        assert ctx["flags"]["verification_pending"] is True
+
+    def test_cust_1006_responsible_gaming_flag(self):
+        state = {"customer_id": "CUST-1006", "audit_trail": []}
+        result = get_customer_context(state)
+
+        ctx = result["customer_context"]
+        assert ctx["flags"]["responsible_gaming_flag"] is True
+
+    def test_empty_customer_id_returns_error(self):
+        state = {"customer_id": "", "audit_trail": []}
+        result = get_customer_context(state)
+
+        assert "error" in result["customer_context"]
+
+    def test_no_customer_id_returns_error(self):
+        state = {"audit_trail": []}
+        result = get_customer_context(state)
+
+        assert "error" in result["customer_context"]
+
+    def test_unknown_customer_returns_error(self):
+        state = {"customer_id": "CUST-9999", "audit_trail": []}
+        result = get_customer_context(state)
+
+        assert "error" in result["customer_context"]
+
+    def test_audit_trail_appended(self):
+        state = {
+            "customer_id": "CUST-1001",
+            "audit_trail": [{"step": "classify_ticket"}],
+        }
+        result = get_customer_context(state)
+
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        assert trail[1]["step"] == "customer_context"
+        assert trail[1]["customer_id"] == "CUST-1001"
+
+    def test_context_has_expected_keys(self):
+        state = {"customer_id": "CUST-1002", "audit_trail": []}
+        result = get_customer_context(state)
+
+        ctx = result["customer_context"]
+        assert "profile" in ctx
+        assert "transactions" in ctx
+        assert "tickets" in ctx
+        assert "bonuses" in ctx
+        assert "flags" in ctx

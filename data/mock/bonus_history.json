@@ -1,0 +1,67 @@
+[
+  {
+    "bonus_id": "BNS-7001",
+    "customer_id": "CUST-1004",
+    "bonus_type": "welcome_bonus",
+    "bonus_code": "WELCOME100",
+    "amount": 100.00,
+    "currency": "EUR",
+    "status": "active",
+    "wagering_requirement": 30,
+    "wagering_progress": 12,
+    "expires_at": "2024-08-10T23:59:59Z",
+    "created_at": "2024-01-10T15:05:00Z"
+  },
+  {
+    "bonus_id": "BNS-7002",
+    "customer_id": "CUST-1001",
+    "bonus_type": "reload_bonus",
+    "bonus_code": "RELOAD50",
+    "amount": 50.00,
+    "currency": "EUR",
+    "status": "expired",
+    "wagering_requirement": 20,
+    "wagering_progress": 20,
+    "expires_at": "2024-06-30T23:59:59Z",
+    "created_at": "2024-06-01T10:00:00Z"
+  },
+  {
+    "bonus_id": "BNS-7003",
+    "customer_id": "CUST-1002",
+    "bonus_type": "free_bet",
+    "bonus_code": "FREEBET10",
+    "amount": 10.00,
+    "currency": "EUR",
+    "status": "used",
+    "wagering_requirement": 1,
+    "wagering_progress": 1,
+    "expires_at": "2024-07-15T23:59:59Z",
+    "created_at": "2024-07-01T08:00:00Z"
+  },
+  {
+    "bonus_id": "BNS-7004",
+    "customer_id": "CUST-1006",
+    "bonus_type": "loyalty_bonus",
+    "bonus_code": "LOYAL200",
+    "amount": 200.00,
+    "currency": "EUR",
+    "status": "forfeited",
+    "wagering_requirement": 25,
+    "wagering_progress": 5,
+    "expires_at": "2024-07-28T23:59:59Z",
+    "created_at": "2024-07-01T09:00:00Z"
+  },
+  {
+    "bonus_id": "BNS-7005",
+    "customer_id": "CUST-1003",
+    "bonus_type": "welcome_bonus",
+    "bonus_code": "WELCOME100",
+    "amount": 100.00,
+    "currency": "EUR",
+    "status": "completed",
+    "wagering_requirement": 30,
+    "wagering_progress": 30,
+    "expires_at": "2024-02-02T23:59:59Z",
+    "created_at": "2023-11-02T12:00:00Z"
+  }
+]

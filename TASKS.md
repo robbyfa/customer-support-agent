@@ -6,27 +6,27 @@
 
 ## Phase 0 — Foundation
 
-### Task 1: Project scaffolding, dependencies, and graph state
+### Task 1: Project scaffolding, dependencies, and graph state ✅
 
-- [ ] Create `pyproject.toml` with all dependencies (langchain, langgraph, langchain-openai, langsmith, pydantic, chromadb, streamlit, python-dotenv) and dev deps (ruff, pytest, pytest-cov)
-- [ ] Create `.python-version` (3.12)
-- [ ] Create `.env.example` (OPENAI_API_KEY, MODEL_NAME, LANGCHAIN_TRACING_V2, LANGCHAIN_API_KEY, LANGCHAIN_PROJECT)
-- [ ] Create `.gitignore`
-- [ ] Create all package directories with `__init__.py` files (models, graph, graph/nodes, graph/chains, tools, storage, evals, tests)
-- [ ] Create `graph/consts.py` — node name constants (CLASSIFY_TICKET, RETRIEVE_POLICY, CUSTOMER_CONTEXT, RISK_CHECK, DRAFT_RESPONSE, APPROVAL_GATE, FINAL_RESPONSE)
-- [ ] Create `graph/state.py` — `GraphState(TypedDict)` with all fields (customer_message, customer_id, classification, policy_context, customer_context, risk_assessment, recommendation, draft_response, approved, final_output, audit_trail)
-- [ ] Run `uv sync` — verify all imports resolve
-- [ ] Verify: `uv run python -c "import langchain, langgraph, pydantic, chromadb; print('OK')"`
+- [x] Create `pyproject.toml` with all dependencies (langchain, langgraph, langchain-openai, langsmith, pydantic, chromadb, streamlit, python-dotenv) and dev deps (ruff, pytest, pytest-cov)
+- [x] Create `.python-version` (3.12)
+- [x] Create `.env.example` (OPENAI_API_KEY, MODEL_NAME, LANGCHAIN_TRACING_V2, LANGCHAIN_API_KEY, LANGCHAIN_PROJECT)
+- [x] Create `.gitignore`
+- [x] Create all package directories with `__init__.py` files (models, graph, graph/nodes, graph/chains, tools, storage, evals, tests)
+- [x] Create `graph/consts.py` — node name constants (CLASSIFY_TICKET, RETRIEVE_POLICY, CUSTOMER_CONTEXT, RISK_CHECK, DRAFT_RESPONSE, APPROVAL_GATE, FINAL_RESPONSE)
+- [x] Create `graph/state.py` — `GraphState(TypedDict)` with all fields (customer_message, customer_id, classification, policy_context, customer_context, risk_assessment, recommendation, draft_response, approved, final_output, audit_trail)
+- [x] Run `uv sync` — verify all imports resolve
+- [x] Verify: `uv run python -c "import langchain, langgraph, pydantic, chromadb; print('OK')"`
 
-### Task 2: Mock data and data loading layer
+### Task 2: Mock data and data loading layer ✅
 
-- [ ] Create `data/mock/customers.json` — 6 customers (CUST-1001 through CUST-1006), one per issue type
-- [ ] Create `data/mock/tickets.json` — 8–10 past tickets across customers
-- [ ] Create `data/mock/transactions.json` — transaction history (deposits, withdrawals, failed attempts)
-- [ ] Create `data/mock/bonus_history.json` — bonus records
-- [ ] Create `storage/mock_data.py` — load functions: `load_customers()`, `load_tickets()`, `load_transactions()`, `load_bonus_history()`, `get_customer()`, `get_customer_transactions()`, `get_customer_tickets()`, `get_customer_bonus()`
-- [ ] Write tests in `tests/test_tools.py` (initial) — verify counts, known customer lookup, unknown customer returns None
-- [ ] Verify: `uv run pytest tests/test_tools.py -v` passes
+- [x] Create `data/mock/customers.json` — 6 customers (CUST-1001 through CUST-1006), one per issue type
+- [x] Create `data/mock/tickets.json` — 8–10 past tickets across customers
+- [x] Create `data/mock/transactions.json` — transaction history (deposits, withdrawals, failed attempts)
+- [x] Create `data/mock/bonus_history.json` — bonus records
+- [x] Create `storage/mock_data.py` — load functions: `load_customers()`, `load_tickets()`, `load_transactions()`, `load_bonus_history()`, `get_customer()`, `get_customer_transactions()`, `get_customer_tickets()`, `get_customer_bonus()`
+- [x] Write tests in `tests/test_tools.py` (initial) — verify counts, known customer lookup, unknown customer returns None
+- [x] Verify: `uv run pytest tests/test_tools.py -v` passes
 
 ### Task 3: Policy documents and RAG vector store
 

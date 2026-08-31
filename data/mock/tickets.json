@@ -1,0 +1,112 @@
+[
+  {
+    "ticket_id": "TKT-3001",
+    "customer_id": "CUST-1001",
+    "category": "withdrawal_issue",
+    "subject": "Withdrawal failed — third attempt",
+    "description": "I tried to withdraw €300 three times and it keeps failing. Nobody is helping me.",
+    "status": "open",
+    "priority": "high",
+    "created_at": "2024-07-28T14:23:00Z",
+    "updated_at": "2024-07-28T14:23:00Z"
+  },
+  {
+    "ticket_id": "TKT-3002",
+    "customer_id": "CUST-1001",
+    "category": "withdrawal_issue",
+    "subject": "Withdrawal pending for 48 hours",
+    "description": "My withdrawal from two days ago still shows as pending.",
+    "status": "resolved",
+    "priority": "medium",
+    "created_at": "2024-07-20T09:10:00Z",
+    "updated_at": "2024-07-21T11:30:00Z"
+  },
+  {
+    "ticket_id": "TKT-3003",
+    "customer_id": "CUST-1002",
+    "category": "deposit_issue",
+    "subject": "Deposit not credited",
+    "description": "I deposited €100 via bank transfer two hours ago and it still does not show in my account.",
+    "status": "open",
+    "priority": "medium",
+    "created_at": "2024-07-29T10:45:00Z",
+    "updated_at": "2024-07-29T10:45:00Z"
+  },
+  {
+    "ticket_id": "TKT-3004",
+    "customer_id": "CUST-1003",
+    "category": "login_issue",
+    "subject": "Cannot log in to my account",
+    "description": "I keep getting an 'account locked' message when I try to log in. I did not request this.",
+    "status": "open",
+    "priority": "high",
+    "created_at": "2024-07-29T08:00:00Z",
+    "updated_at": "2024-07-29T08:00:00Z"
+  },
+  {
+    "ticket_id": "TKT-3005",
+    "customer_id": "CUST-1003",
+    "category": "login_issue",
+    "subject": "Password reset not working",
+    "description": "I requested a password reset link but never received the email.",
+    "status": "resolved",
+    "priority": "low",
+    "created_at": "2024-06-15T16:20:00Z",
+    "updated_at": "2024-06-16T09:00:00Z"
+  },
+  {
+    "ticket_id": "TKT-3006",
+    "customer_id": "CUST-1004",
+    "category": "bonus_issue",
+    "subject": "Welcome bonus not applied",
+    "description": "I signed up with the WELCOME100 promo code but my bonus was not credited.",
+    "status": "open",
+    "priority": "medium",
+    "created_at": "2024-07-25T12:00:00Z",
+    "updated_at": "2024-07-25T12:00:00Z"
+  },
+  {
+    "ticket_id": "TKT-3007",
+    "customer_id": "CUST-1005",
+    "category": "account_verification",
+    "subject": "Verification taking too long",
+    "description": "I submitted my ID and proof of address five days ago and my account is still not verified.",
+    "status": "open",
+    "priority": "medium",
+    "created_at": "2024-07-27T11:30:00Z",
+    "updated_at": "2024-07-27T11:30:00Z"
+  },
+  {
+    "ticket_id": "TKT-3008",
+    "customer_id": "CUST-1006",
+    "category": "responsible_gaming",
+    "subject": "Self-exclusion request",
+    "description": "I want to take a break from gambling. Please help me set a self-exclusion period.",
+    "status": "open",
+    "priority": "high",
+    "created_at": "2024-07-29T07:15:00Z",
+    "updated_at": "2024-07-29T07:15:00Z"
+  },
+  {
+    "ticket_id": "TKT-3009",
+    "customer_id": "CUST-1001",
+    "category": "withdrawal_issue",
+    "subject": "Withdrawal reversed without explanation",
+    "description": "My €500 withdrawal was reversed back to my account without any notification or reason.",
+    "status": "resolved",
+    "priority": "high",
+    "created_at": "2024-07-10T18:00:00Z",
+    "updated_at": "2024-07-12T10:00:00Z"
+  },
+  {
+    "ticket_id": "TKT-3010",
+    "customer_id": "CUST-1002",
+    "category": "deposit_issue",
+    "subject": "Double charge on deposit",
+    "description": "I was charged twice for a single €50 deposit. Please refund the duplicate.",
+    "status": "resolved",
+    "priority": "high",
+    "created_at": "2024-07-05T14:30:00Z",
+    "updated_at": "2024-07-06T09:15:00Z"
+  }
+]

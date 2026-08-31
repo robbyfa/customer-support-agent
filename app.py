@@ -232,6 +232,7 @@ if result:
     classification = fo.get("classification", {})
     risk = fo.get("risk_assessment", {})
     draft = fo.get("draft_response", {})
+    recommendation = fo.get("recommendation", {})
     ctx = fo.get("customer_context", {})
     flags = ctx.get("flags", {}) if isinstance(ctx, dict) else {}
     gc = result.get("groundedness_check", {})
@@ -255,16 +256,37 @@ if result:
                 st.rerun()
 
         if st.session_state.approved_action == "approved":
-            st.success("✅ Response approved - ready to send to customer.")
+            st.success(
+                "✅ **Response approved** - ready to send to customer.\n\n"
+                f"*Mock action: message would be sent to "
+                f"{fo.get('customer_id', 'unknown')}. "
+                f"Ticket status → resolved.*"
+            )
         elif st.session_state.approved_action == "rejected":
-            st.error("❌ Response rejected - draft saved for manual review.")
+            st.error(
+                "❌ **Response rejected** - draft saved for manual review.\n\n"
+                f"*Mock action: case escalated to specialist team for "
+                f"{classification.get('category', 'unknown')}. "
+                f"Draft preserved in audit trail for reference.*"
+            )
     else:
         st.success("✅ Auto-approved - no human review required.")
 
-    # ── 2. Draft response ───────────────────────────────────────────
+    # ── 2. Draft response (what to SAY) ────────────────────────────
     st.subheader(f"✉️ Draft Response - tone: {draft.get('tone', '?')}")
     draft_text = draft.get("customer_message", "No draft generated.")
     st.info(draft_text)
+
+    # ── 2b. Internal recommendation (what to DO) ────────────────────
+    if recommendation and recommendation.get("recommended_action"):
+        st.subheader("🎯 Internal Recommendation")
+        st.warning(recommendation.get("recommended_action", ""))
+        if recommendation.get("reason"):
+            st.caption(f"**Reason:** {recommendation['reason']}")
+        if recommendation.get("missing_information"):
+            st.markdown("**Still needed:**")
+            for item in recommendation["missing_information"]:
+                st.markdown(f"- {item}")
 
     # ── 3. Classification badges ────────────────────────────────────
     st.subheader("📋 Classification")

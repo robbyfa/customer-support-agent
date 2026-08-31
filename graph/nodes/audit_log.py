@@ -1,4 +1,4 @@
-"""Node: audit_log — consolidates and summarises the audit trail before
+"""Node: audit_log - consolidates and summarises the audit trail before
 the final response is assembled.
 
 Adds a summary entry with total steps, total duration estimate, and

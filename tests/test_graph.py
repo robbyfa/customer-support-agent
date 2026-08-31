@@ -563,7 +563,7 @@ class TestGroundednessRouting:
 
 
 # ===========================================================================
-# Conditional routing tests (Task 15 — updated for new graph)
+# Conditional routing tests (Task 15 - updated for new graph)
 # ===========================================================================
 
 from graph.graph import route_by_category

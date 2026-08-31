@@ -1,8 +1,8 @@
-"""Node: minimal_customer_context — lightweight customer context for
+"""Node: minimal_customer_context - lightweight customer context for
 sensitive cases (responsible gaming, etc.).
 
-Only fetches the profile and risk flags — no transactions, tickets, or
-bonuses — to fast-track sensitive cases while still having enough context
+Only fetches the profile and risk flags - no transactions, tickets, or
+bonuses - to fast-track sensitive cases while still having enough context
 for risk assessment and response generation.
 """
 
@@ -69,7 +69,7 @@ def get_minimal_customer_context(state: GraphState) -> dict[str, Any]:
         "step": "minimal_customer_context",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "customer_id": customer_id,
-        "mode": "minimal — sensitive case fast-track",
+        "mode": "minimal - sensitive case fast-track",
     }
 
     return {

@@ -1,4 +1,4 @@
-"""Node: manual_review_response — fallback when the draft response fails
+"""Node: manual_review_response - fallback when the draft response fails
 groundedness checks after all retries.
 
 Replaces the ungrounded draft with a safe, templated response that

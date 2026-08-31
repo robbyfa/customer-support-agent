@@ -187,6 +187,13 @@ with st.sidebar:
     st.caption("• Where is my welcome bonus?")
     st.caption("• I need to self-exclude")
 
+    st.markdown("---")
+    st.caption(
+        "⚠️ This demo uses synthetic customer data "
+        "and mock policy documents only. No real "
+        "customer information is used or stored."
+    )
+
 # ---------------------------------------------------------------------------
 # Main area
 # ---------------------------------------------------------------------------

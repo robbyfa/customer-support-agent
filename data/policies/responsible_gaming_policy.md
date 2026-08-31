@@ -47,5 +47,5 @@ This policy governs how the support team handles responsible gaming matters. Res
 ## Escalation
 
 - **All responsible gaming cases must be escalated** to the Responsible Gaming team.
-- Self-exclusion requests must be escalated immediately — do not wait for the next business day.
+- Self-exclusion requests must be escalated immediately - do not wait for the next business day.
 - Cases involving minors or suspected underage gambling must be escalated to Compliance with the highest priority.

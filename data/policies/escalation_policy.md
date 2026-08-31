@@ -6,11 +6,11 @@ This policy defines when and how support cases should be escalated to specialist
 
 ## Escalation Tiers
 
-### Tier 1 — Front-line Support
+### Tier 1 - Front-line Support
 - Handles: general inquiries, simple account questions, FAQ-level issues.
 - Resolution target: within the same interaction.
 
-### Tier 2 — Specialist Teams
+### Tier 2 - Specialist Teams
 - **Payments Operations**: failed or delayed withdrawals, missing deposits, duplicate charges, payment provider issues.
 - **Promotions Team**: bonus not credited, wagering disputes, manual bonus credits.
 - **Technical Team**: login issues not resolved by standard troubleshooting, platform bugs, email delivery failures.
@@ -18,7 +18,7 @@ This policy defines when and how support cases should be escalated to specialist
 - **Security Team**: suspicious login activity, account compromise, 2FA reset requests.
 - **Responsible Gaming Team**: self-exclusion requests, deposit limit changes, at-risk behaviour concerns.
 
-### Tier 3 — Management
+### Tier 3 - Management
 - Customer complaints unresolved after two Tier 2 interactions.
 - Formal complaints or regulatory body referrals.
 - Cases involving potential legal liability.

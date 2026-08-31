@@ -3,7 +3,7 @@
     "ticket_id": "TKT-3001",
     "customer_id": "CUST-1001",
     "category": "withdrawal_issue",
-    "subject": "Withdrawal failed — third attempt",
+    "subject": "Withdrawal failed - third attempt",
     "description": "I tried to withdraw €300 three times and it keeps failing. Nobody is helping me.",
     "status": "open",
     "priority": "high",

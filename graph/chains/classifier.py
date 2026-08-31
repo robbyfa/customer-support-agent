@@ -1,4 +1,4 @@
-"""Classification chain — classifies a customer support message into
+"""Classification chain - classifies a customer support message into
 a structured TicketClassification using an LLM with structured output.
 """
 
@@ -26,7 +26,7 @@ potential fraud, account compromise, or self-exclusion.
 - extracted_customer_id: the customer ID if mentioned in the message \
 (e.g. CUST-1001), otherwise null.
 
-Be precise. Do not guess a category — use "other" if it does not fit."""
+Be precise. Do not guess a category - use "other" if it does not fit."""
 
 _prompt = ChatPromptTemplate.from_messages(
     [

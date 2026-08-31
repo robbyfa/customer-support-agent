@@ -1,7 +1,7 @@
 [project]
 name = "customer-support-agent"
 version = "0.1.0"
-description = "Customer Support Resolution Copilot — AI-powered support workflow using LangGraph, RAG, and human-in-the-loop approval"
+description = "Customer Support Resolution Copilot - AI-powered support workflow using LangGraph, RAG, and human-in-the-loop approval"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -20,4 +20,9 @@ dev = [
     "ruff>=0.6.0",
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "llm: tests that require an LLM API key (OPENAI_API_KEY)",
 ]

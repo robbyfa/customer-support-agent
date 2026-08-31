@@ -1,4 +1,4 @@
-# Customer Support Resolution Copilot — Project Spec
+# Customer Support Resolution Copilot - Project Spec
 
 ## 1. Project Overview
 
@@ -622,7 +622,7 @@ customer-support-resolution-copilot/
 
 ## 17. MVP Build Plan
 
-### Phase 0 — Project setup
+### Phase 0 - Project setup
 
 Set up:
 
@@ -635,7 +635,7 @@ pytest + ruff
 base README instructions using uv sync / uv run
 ```
 
-### Phase 1 — Basic workflow
+### Phase 1 - Basic workflow
 
 Build:
 
@@ -647,7 +647,7 @@ draft response
 Streamlit UI
 ```
 
-### Phase 2 — LangGraph control
+### Phase 2 - LangGraph control
 
 Add:
 
@@ -659,7 +659,7 @@ approval gate
 audit trail
 ```
 
-### Phase 3 — Evaluation
+### Phase 3 - Evaluation
 
 Add:
 
@@ -671,7 +671,7 @@ human-review evals
 LangSmith tracing
 ```
 
-### Phase 4 — Polish
+### Phase 4 - Polish
 
 Add:
 

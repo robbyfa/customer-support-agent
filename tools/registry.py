@@ -1,4 +1,4 @@
-"""Tool registry — central configuration for shared resources.
+"""Tool registry - central configuration for shared resources.
 
 Call ``configure()`` once at startup (e.g. in ``main.py`` or ``app.py``)
 before any tool that depends on the vector store is invoked.

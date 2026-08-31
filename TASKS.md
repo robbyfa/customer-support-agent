@@ -197,13 +197,13 @@
 
 ### Task 15: Conditional routing (Phase 2 graph)
 
-- [ ] Add `route_by_category()` routing function to `graph/graph.py`
-- [ ] responsible_gaming → elevated risk path with mandatory human review
-- [ ] Payment categories → transaction-heavy context
-- [ ] Other categories → standard linear flow
-- [ ] Use `add_conditional_edges` after classify_ticket
-- [ ] Extend `tests/test_graph.py` - verify different categories follow different paths
-- [ ] Verify: `uv run pytest tests/test_graph.py -v` passes
+- [x] Add `route_by_category()` routing function to `graph/graph.py`
+- [x] responsible_gaming → elevated risk path with mandatory human review
+- [x] Payment categories → transaction-heavy context
+- [x] Other categories → standard linear flow
+- [x] Use `add_conditional_edges` after classify_ticket
+- [x] Extend `tests/test_graph.py` - verify different categories follow different paths
+- [x] Verify: `uv run pytest tests/test_graph.py -v` passes
 
 ### Task 16: LangSmith tracing and audit trail polish
 

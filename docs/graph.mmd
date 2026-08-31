@@ -1,0 +1,40 @@
+---
+config:
+  flowchart:
+    curve: linear
+  theme: dark
+---
+graph TD
+	__start__([Start]):::first
+	classify_ticket(🏷️ Classify Ticket)
+	retrieve_policy(📄 Retrieve Policy)
+	minimal_ctx(👤 Minimal Customer Context)
+	full_ctx(👤 Full Customer Context)
+	risk_check(⚠️ Risk Check)
+	draft_response(✉️ Draft Response)
+	groundedness_check{🔍 Groundedness Check}
+	manual_review(🛑 Manual Review Response)
+	approval_gate(🔒 Approval Gate)
+	audit_log(📝 Audit Log)
+	final_response(✅ Final Response)
+	__end__([End]):::last
+
+	__start__ --> classify_ticket
+	classify_ticket --> retrieve_policy
+	retrieve_policy -- "sensitive<br/>(responsible_gaming)" --> minimal_ctx
+	retrieve_policy -- "standard<br/>(all other categories)" --> full_ctx
+	minimal_ctx --> risk_check
+	full_ctx --> risk_check
+	risk_check --> draft_response
+	draft_response --> groundedness_check
+	groundedness_check -- "grounded ✅" --> approval_gate
+	groundedness_check -- "not grounded 🔄<br/>(retry, max 2)" --> draft_response
+	groundedness_check -- "retries exhausted 🛑" --> manual_review
+	manual_review --> approval_gate
+	approval_gate --> audit_log
+	audit_log --> final_response
+	final_response --> __end__
+
+	classDef default fill:#2d2b55,stroke:#7c3aed,color:#e2e8f0
+	classDef first fill:#1e1b4b,stroke:#7c3aed,color:#a78bfa
+	classDef last fill:#7c3aed,stroke:#7c3aed,color:#fff

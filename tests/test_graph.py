@@ -525,7 +525,7 @@ class TestEndToEndGraph:
 # ===========================================================================
 
 from graph.graph import _route_after_groundedness
-from graph.consts import APPROVAL_GATE, DRAFT_RESPONSE
+from graph.consts import APPROVAL_GATE, DRAFT_RESPONSE, MANUAL_REVIEW_RESPONSE
 
 
 class TestGroundednessRouting:
@@ -550,13 +550,139 @@ class TestGroundednessRouting:
         }
         assert _route_after_groundedness(state) == DRAFT_RESPONSE
 
-    def test_not_grounded_max_retries_routes_to_approval(self):
+    def test_not_grounded_max_retries_routes_to_manual_review(self):
         state = {
             "groundedness_check": {"is_grounded": False, "confidence": 0.2, "issues": ["Gave up"]},
             "draft_retries": 2,
         }
-        assert _route_after_groundedness(state) == APPROVAL_GATE
+        assert _route_after_groundedness(state) == MANUAL_REVIEW_RESPONSE
 
     def test_missing_check_defaults_to_approval(self):
         state = {"draft_retries": 0}
         assert _route_after_groundedness(state) == APPROVAL_GATE
+
+
+# ===========================================================================
+# Conditional routing tests (Task 15 — updated for new graph)
+# ===========================================================================
+
+from graph.graph import route_by_category
+from graph.consts import CUSTOMER_CONTEXT, MINIMAL_CUSTOMER_CONTEXT
+
+
+class TestRouteByCategory:
+    def test_responsible_gaming_routes_to_minimal_context(self):
+        state = {"classification": {"category": "responsible_gaming"}}
+        assert route_by_category(state) == MINIMAL_CUSTOMER_CONTEXT
+
+    def test_withdrawal_routes_to_full_context(self):
+        state = {"classification": {"category": "withdrawal_issue"}}
+        assert route_by_category(state) == CUSTOMER_CONTEXT
+
+    def test_deposit_routes_to_full_context(self):
+        state = {"classification": {"category": "deposit_issue"}}
+        assert route_by_category(state) == CUSTOMER_CONTEXT
+
+    def test_login_routes_to_full_context(self):
+        state = {"classification": {"category": "login_issue"}}
+        assert route_by_category(state) == CUSTOMER_CONTEXT
+
+    def test_bonus_routes_to_full_context(self):
+        state = {"classification": {"category": "bonus_issue"}}
+        assert route_by_category(state) == CUSTOMER_CONTEXT
+
+    def test_other_routes_to_full_context(self):
+        state = {"classification": {"category": "other"}}
+        assert route_by_category(state) == CUSTOMER_CONTEXT
+
+    def test_missing_classification_routes_to_full_context(self):
+        state = {}
+        assert route_by_category(state) == CUSTOMER_CONTEXT
+
+
+# ===========================================================================
+# New node tests: minimal_customer_context, manual_review, audit_log
+# ===========================================================================
+
+from graph.nodes.minimal_customer_context import get_minimal_customer_context
+from graph.nodes.manual_review_response import manual_review_response
+from graph.nodes.audit_log import audit_log as audit_log_node
+
+
+class TestMinimalCustomerContext:
+    def test_cust_1006_has_responsible_gaming_flag(self):
+        state = {"customer_id": "CUST-1006", "audit_trail": []}
+        result = get_minimal_customer_context(state)
+        ctx = result["customer_context"]
+        assert ctx["flags"]["responsible_gaming_flag"] is True
+        assert ctx["transactions"] == []
+        assert ctx["tickets"] == []
+        assert ctx["bonuses"] == []
+
+    def test_profile_included(self):
+        state = {"customer_id": "CUST-1006", "audit_trail": []}
+        result = get_minimal_customer_context(state)
+        assert result["customer_context"]["profile"]["customer_id"] == "CUST-1006"
+
+    def test_no_customer_id_returns_error(self):
+        state = {"audit_trail": []}
+        result = get_minimal_customer_context(state)
+        assert "error" in result["customer_context"]
+
+    def test_unknown_customer_returns_error(self):
+        state = {"customer_id": "CUST-9999", "audit_trail": []}
+        result = get_minimal_customer_context(state)
+        assert "error" in result["customer_context"]
+
+    def test_audit_trail_appended(self):
+        state = {"customer_id": "CUST-1006", "audit_trail": [{"step": "retrieve_policy"}]}
+        result = get_minimal_customer_context(state)
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        assert trail[1]["step"] == "minimal_customer_context"
+
+
+class TestManualReviewResponse:
+    def test_replaces_draft_with_template(self):
+        state = {
+            "classification": {"category": "withdrawal_issue"},
+            "risk_assessment": {"risk_level": "high"},
+            "audit_trail": [],
+        }
+        result = manual_review_response(state)
+        draft = result["draft_response"]
+        assert "flagged for review" in draft["customer_message"]
+        assert draft["approval_required"] is True
+        assert draft["tone"] == "formal"
+
+    def test_audit_trail_appended(self):
+        state = {
+            "classification": {},
+            "risk_assessment": {},
+            "audit_trail": [{"step": "groundedness_check"}],
+        }
+        result = manual_review_response(state)
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        assert trail[1]["step"] == "manual_review_response"
+
+
+class TestAuditLogNode:
+    def test_summary_entry_added(self):
+        state = {
+            "classification": {"category": "withdrawal_issue"},
+            "risk_assessment": {"risk_level": "high", "requires_human_review": True},
+            "draft_response": {"approval_required": True, "tone": "empathetic"},
+            "groundedness_check": {"is_grounded": True},
+            "draft_retries": 0,
+            "audit_trail": [{"step": "approval_gate"}],
+        }
+        result = audit_log_node(state)
+        trail = result["audit_trail"]
+        assert len(trail) == 2
+        summary = trail[1]
+        assert summary["step"] == "audit_log"
+        assert summary["category"] == "withdrawal_issue"
+        assert summary["risk_level"] == "high"
+        assert summary["requires_human_review"] is True
+        assert summary["groundedness"] is True

@@ -133,7 +133,11 @@ class PolicyVectorStore:
         """
         where_filter = None
         if category:
-            where_filter = {"categories": {"$contains": category}}
+            # `$contains` does not match comma-separated scalar metadata in Chroma.
+            # Select the mapped source names, including shared escalation guidance.
+            sources = [source for source, categories in _SOURCE_TO_CATEGORY.items() if category in categories]
+            if sources:
+                where_filter = {"source": {"$in": sources}}
 
         results = self._collection.query(
             query_texts=[query],

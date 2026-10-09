@@ -1,0 +1,2488 @@
+[
+  {
+    "id": "q01",
+    "expected_category": "withdrawal_issue",
+    "actual_category": "withdrawal_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 0.0,
+      "aggregate": 0.85
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "withdrawal_issue",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is experiencing repeated failures when attempting to withdraw \u20ac200.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Customer has 3 failed withdrawals",
+          "Negative sentiment with repeated withdrawal failures"
+        ],
+        "category": "withdrawal_issue",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear Maria,\n\nThank you for reaching out regarding your withdrawal attempts. I understand how frustrating it can be to experience repeated failures when trying to withdraw funds.\n\nGiven that you have encountered three failed withdrawal attempts, this case will be escalated to our Payments Operations team for further review. They will investigate the issue and determine the best course of action.\n\nPlease allow us some time to address this matter, and we will keep you updated on any developments.\n\nThank you for your patience.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "empathetic",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "This case requires human review due to the high risk assessment and repeated failures."
+      },
+      "recommendation": {
+        "action_type": "escalate_to_team",
+        "recommended_action": "Escalate to Payments Operations for immediate review of the failed withdrawal attempts.",
+        "target_team": "Payments Operations",
+        "reason": "The customer has reported three failed withdrawal attempts within a short period, which is classified as high priority according to the withdrawal policy. Immediate escalation is necessary to address the issue and confirm the payment status before communicating with the customer.",
+        "relevant_policy_sources": [
+          "withdrawal_policy.md"
+        ],
+        "missing_information": [
+          "Confirmation of payment status from Payments Operations",
+          "Details on the specific failure reasons for the withdrawals"
+        ],
+        "human_review_required": true
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": true,
+      "safe_fallback": false,
+      "policy_sources": [
+        "withdrawal_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q02",
+    "expected_category": "withdrawal_issue",
+    "actual_category": "withdrawal_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.8
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 0.9
+    },
+    "observed": {
+      "classification": {
+        "category": "withdrawal_issue",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is inquiring about a pending withdrawal that has not been processed for 5 days.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Customer has 3 failed withdrawals",
+          "Negative sentiment with repeated withdrawal failures"
+        ],
+        "category": "withdrawal_issue",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response states that the case will be reviewed by the Payments Operations team due to three failed withdrawal attempts, but the policy specifies that cases must be escalated to Payments Operations immediately if there are two or more failed attempts within 48 hours, not just reviewed. The wording implies a delay in escalation which is not supported by the policy.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response states that the case will be reviewed by the Payments Operations team due to three failed withdrawal attempts, but the policy specifies that cases must be escalated to Payments Operations immediately if there are two or more failed attempts within 48 hours, not just reviewed. The wording implies a delay in escalation which is not supported by the policy."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "withdrawal_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q03",
+    "expected_category": "withdrawal_issue",
+    "actual_category": "withdrawal_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.717
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "withdrawal_issue",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer is inquiring about the withdrawal time for \u20ac50 from their account.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "withdrawal_issue",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response states that withdrawal requests are processed within 1 to 3 business days, but this timeframe is not mentioned in the provided policy context.; The response implies that a pending deposit affects the ability to withdraw funds, but there is no mention of this in the policy context.; The statement about a withdrawal not being processed until the deposit is confirmed as available in the account is not explicitly supported by the provided policy context. The policy does not mention the need for a deposit to be confirmed before processing a withdrawal.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response states that withdrawal requests are processed within 1 to 3 business days, but this timeframe is not mentioned in the provided policy context.",
+          "The response implies that a pending deposit affects the ability to withdraw funds, but there is no mention of this in the policy context.",
+          "The statement about a withdrawal not being processed until the deposit is confirmed as available in the account is not explicitly supported by the provided policy context. The policy does not mention the need for a deposit to be confirmed before processing a withdrawal."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "withdrawal_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q04",
+    "expected_category": "withdrawal_issue",
+    "actual_category": "withdrawal_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.8
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 0.9
+    },
+    "observed": {
+      "classification": {
+        "category": "withdrawal_issue",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is upset about a \u20ac500 withdrawal being reversed without explanation.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Customer has 3 failed withdrawals",
+          "Negative sentiment with repeated withdrawal failures"
+        ],
+        "category": "withdrawal_issue",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response states that the matter will be reviewed by the Compliance team, but it does not clarify that the customer's account balance must be restored before any communication is sent, which is a requirement in the policy. Additionally, the response does not provide a clear explanation of the reason for the reversal, which is required by the policy.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response states that the matter will be reviewed by the Compliance team, but it does not clarify that the customer's account balance must be restored before any communication is sent, which is a requirement in the policy. Additionally, the response does not provide a clear explanation of the reason for the reversal, which is required by the policy."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "withdrawal_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q05",
+    "expected_category": "withdrawal_issue",
+    "actual_category": "withdrawal_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 0.917
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "withdrawal_issue",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer is inquiring about the possibility of withdrawing using a different payment method than the one used for deposit.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "withdrawal_issue",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response states that withdrawals must be processed using the same payment method that was used for the deposit, but this is not mentioned in the provided policy context.; The response states that a withdrawal cannot be processed until the deposit is confirmed, but the policy does not explicitly mention this requirement. The policy focuses on failed withdrawals and escalation procedures, not on the status of deposits in relation to withdrawals.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.8,
+        "issues": [
+          "The response states that withdrawals must be processed using the same payment method that was used for the deposit, but this is not mentioned in the provided policy context.",
+          "The response states that a withdrawal cannot be processed until the deposit is confirmed, but the policy does not explicitly mention this requirement. The policy focuses on failed withdrawals and escalation procedures, not on the status of deposits in relation to withdrawals."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "withdrawal_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q06",
+    "expected_category": "deposit_issue",
+    "actual_category": "deposit_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 1.0
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "deposit_issue",
+        "urgency": "medium",
+        "sentiment": "negative",
+        "summary": "The customer is experiencing a delay in the visibility of their recent deposit.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "medium",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Medium urgency with negative sentiment"
+        ],
+        "category": "deposit_issue",
+        "urgency": "medium",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear James O'Brien,\n\nThank you for reaching out regarding your recent deposit of \u20ac100 via bank transfer. I understand that it has not yet appeared in your account, and I apologize for any inconvenience this may have caused.\n\nTo assist you further, I will first verify the transaction details and check our internal logs for any pending entries. If we cannot locate the deposit, I may need to ask you for a bank statement or payment confirmation screenshot.\n\nPlease allow me some time to investigate this matter, and I will keep you updated on the progress.\n\nThank you for your patience.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "empathetic",
+        "should_send": true,
+        "approval_required": false,
+        "reason_approval_required": null
+      },
+      "recommendation": {
+        "action_type": "check_queue",
+        "recommended_action": "Check the internal transaction log for the pending deposit transaction (TXN-5006) to verify its status and any potential issues.",
+        "target_team": "Payments Operations",
+        "reason": "The customer has reported a delay in the visibility of their deposit, which is currently pending. According to the deposit policy, we need to verify the transaction details and check for any pending or failed entries in the internal transaction log.",
+        "relevant_policy_sources": [
+          "deposit_policy.md"
+        ],
+        "missing_information": [
+          "Internal transaction log status for TXN-5006",
+          "Any error messages or issues related to the bank transfer method"
+        ],
+        "human_review_required": false
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": false,
+      "safe_fallback": false,
+      "policy_sources": [
+        "deposit_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q07",
+    "expected_category": "deposit_issue",
+    "actual_category": "deposit_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 0.917
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "deposit_issue",
+        "urgency": "medium",
+        "sentiment": "negative",
+        "summary": "The customer was charged twice for a single deposit and is requesting a refund for the duplicate charge.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "medium",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Medium urgency with negative sentiment"
+        ],
+        "category": "deposit_issue",
+        "urgency": "medium",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear James O'Brien,\n\nThank you for reaching out regarding the duplicate charge for your \u20ac50 deposit. I understand how concerning this situation can be, and I appreciate your patience as we work to resolve it.\n\nI will review the transaction logs to verify the charges you mentioned. If confirmed as a duplicate, we will initiate a refund for the extra charge to your original payment method. You can expect to receive an update on the refund timeline shortly.\n\nThank you for your understanding, and please let me know if you have any further questions in the meantime.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "empathetic",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "This case requires human review due to the medium risk level and negative sentiment."
+      },
+      "recommendation": {
+        "action_type": "escalate_to_team",
+        "recommended_action": "Escalate to Payments Operations for refund processing of the duplicate charge.",
+        "target_team": "Payments Operations",
+        "reason": "The customer has reported a duplicate charge, which has been confirmed in the transaction log. According to the deposit policy, once a duplicate charge is confirmed, a refund must be initiated immediately to the original payment method.",
+        "relevant_policy_sources": [
+          "deposit_policy.md"
+        ],
+        "missing_information": [
+          "Confirmation of the refund process initiation from Payments Operations"
+        ],
+        "human_review_required": true
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 1,
+      "pending_review": true,
+      "safe_fallback": false,
+      "policy_sources": [
+        "deposit_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q08",
+    "expected_category": "deposit_issue",
+    "actual_category": "other",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 0.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 0.717
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "other",
+        "urgency": "low",
+        "sentiment": "neutral",
+        "summary": "The customer is inquiring about the minimum deposit amount.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "other",
+        "urgency": "low",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response mentions a minimum deposit amount of \u20ac10, which is not supported by the provided policy context.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response mentions a minimum deposit amount of \u20ac10, which is not supported by the provided policy context."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "escalation_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q09",
+    "expected_category": "deposit_issue",
+    "actual_category": "deposit_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 0.0,
+      "response_quality": 0.0,
+      "keywords": 0.5,
+      "aggregate": 0.442
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "deposit_issue",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is experiencing repeated declines on card deposits using multiple cards.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Negative sentiment combined with high urgency"
+        ],
+        "category": "deposit_issue",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response suggests escalating to Payments Operations for investigation, which is not mentioned in the policy context. The policy only advises support agents to suggest alternative payment methods if issues persist, without mentioning escalation procedures.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.8,
+        "issues": [
+          "The response suggests escalating to Payments Operations for investigation, which is not mentioned in the policy context. The policy only advises support agents to suggest alternative payment methods if issues persist, without mentioning escalation procedures."
+        ],
+        "draft_grounded": true,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "deposit_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q10",
+    "expected_category": "login_issue",
+    "actual_category": "login_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 0.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 0.717
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.9
+    },
+    "observed": {
+      "classification": {
+        "category": "login_issue",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is unable to log in because their account is locked.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Negative sentiment combined with high urgency"
+        ],
+        "category": "login_issue",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear Anna M\u00fcller,\n\nThank you for reaching out to us regarding your account access issue. I understand how frustrating it can be to encounter a locked account.\n\nYour account has been locked due to multiple failed login attempts. To assist you further, we will need to verify your identity. Please provide the following information:\n- Your registered email address\n- Your date of birth\n- The last four digits of your registered payment method\n\nOnce we have this information, we will review your case and take the necessary steps to unlock your account as soon as possible.\n\nThank you for your patience, and we look forward to resolving this issue for you.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "empathetic",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "This case requires human review due to the high urgency and negative sentiment."
+      },
+      "recommendation": {
+        "action_type": "manual_review",
+        "recommended_action": "Verify the customer's identity using registered email, date of birth, and last four digits of the payment method, then unlock the account if verification is successful.",
+        "target_team": "Support Operations",
+        "reason": "The customer's account is locked due to multiple failed login attempts, and they have contacted support for assistance. According to the login policy, we can manually unlock the account after verifying their identity. This is necessary to address the high urgency and negative sentiment of the customer.",
+        "relevant_policy_sources": [
+          "login_policy.md"
+        ],
+        "missing_information": [
+          "date of birth",
+          "last four digits of the registered payment method"
+        ],
+        "human_review_required": true
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": true,
+      "safe_fallback": false,
+      "policy_sources": [
+        "login_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q11",
+    "expected_category": "login_issue",
+    "actual_category": "login_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 0.917
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "login_issue",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer did not receive the password reset email they requested.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "login_issue",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Dear Anna M\u00fcller,\n\nThank you for reaching out regarding the password reset link. I understand that you have not received the email after requesting it.\n\nTo assist you further, please verify that the email address we have on file is correct: anna.mueller@example.com. Additionally, I recommend checking your spam or junk folder, as the reset email may have been filtered there.\n\nIf you still do not see the email, I can resend the password reset link manually. Please let me know if you would like me to proceed with that.\n\nThank you for your patience, and I look forward to your response.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "neutral",
+        "should_send": true,
+        "approval_required": false,
+        "reason_approval_required": null
+      },
+      "recommendation": {
+        "action_type": "check_queue",
+        "recommended_action": "Verify the email address on file for accuracy and check if the password reset email was sent.",
+        "target_team": "Technical",
+        "reason": "The customer did not receive the password reset email, which may indicate an issue with the email address on file or the email delivery system. Verifying the email address is the first step in troubleshooting this issue as per the login policy.",
+        "relevant_policy_sources": [
+          "login_policy.md"
+        ],
+        "missing_information": [
+          "Confirmation of the email address on file (anna.mueller@example.com)",
+          "Status of the password reset email (was it sent, and if so, when?)"
+        ],
+        "human_review_required": false
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": false,
+      "safe_fallback": false,
+      "policy_sources": [
+        "login_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q12",
+    "expected_category": "login_issue",
+    "actual_category": "login_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 0.0,
+      "aggregate": 0.85
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "login_issue",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is concerned about unauthorized login attempts from a different country.",
+        "requires_human_review": true,
+        "sensitive_case": true,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Negative sentiment combined with high urgency",
+          "Classified as sensitive case"
+        ],
+        "category": "login_issue",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear Anna M\u00fcller,\n\nThank you for reaching out to us regarding the suspicious login attempts on your account. I understand how concerning this situation can be, and I assure you that your security is our top priority.\n\nIn accordance with our policy on suspicious login activity, we will need to temporarily suspend your account to protect your information. This case will be escalated to our Security team for further investigation.\n\nIn the meantime, I recommend that you change your password as soon as you regain access to your account. \n\nPlease allow us some time to review this matter, and we will keep you updated on any developments.\n\nThank you for your understanding and patience.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "This case is classified as sensitive and requires human review due to the high urgency and negative sentiment."
+      },
+      "recommendation": {
+        "action_type": "escalate_to_team",
+        "recommended_action": "Temporarily suspend the account and escalate to the Security team for review of unauthorized login attempts.",
+        "target_team": "Security",
+        "reason": "The customer reported unauthorized login attempts, which requires immediate action according to the login policy. The account must be suspended to prevent further unauthorized access, and the Security team needs to investigate the situation.",
+        "relevant_policy_sources": [
+          "login_policy.md"
+        ],
+        "missing_information": [
+          "Details of the unauthorized login attempts (if available)",
+          "Confirmation of the customer's identity before account suspension"
+        ],
+        "human_review_required": true
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": true,
+      "safe_fallback": false,
+      "policy_sources": [
+        "login_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q13",
+    "expected_category": "login_issue",
+    "actual_category": "login_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 0.0,
+      "aggregate": 0.85
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "login_issue",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is unable to log in due to losing their phone and not being able to use two-factor authentication.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Negative sentiment combined with high urgency"
+        ],
+        "category": "login_issue",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear Anna M\u00fcller,\n\nI understand that you are currently unable to access your account due to losing your phone and the associated two-factor authentication (2FA). To assist you in regaining access, we will need to verify your identity. Please provide a government-issued ID that matches your account name, along with a selfie holding the ID.\n\nOnce we receive this information, your request for a 2FA reset will be escalated to our Security team for review. We appreciate your patience as we work to resolve this matter promptly.\n\nThank you for your understanding.\n\nBest regards,\nCustomer Support Team",
+        "tone": "empathetic",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "This case requires human review due to the sensitive nature of account access issues."
+      },
+      "recommendation": {
+        "action_type": "escalate_to_team",
+        "recommended_action": "Escalate to Security team for 2FA reset request and identity verification process.",
+        "target_team": "Security",
+        "reason": "The customer is unable to log in due to losing access to their two-factor authentication method. According to the login policy, identity verification is required before resetting 2FA, and this must be escalated to the Security team for review.",
+        "relevant_policy_sources": [
+          "login_policy.md"
+        ],
+        "missing_information": [
+          "Customer's government-issued ID details",
+          "Selfie holding the ID for verification"
+        ],
+        "human_review_required": true
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": true,
+      "safe_fallback": false,
+      "policy_sources": [
+        "login_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q14",
+    "expected_category": "bonus_issue",
+    "actual_category": "bonus_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.8
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "negative",
+        "summary": "The customer did not receive the bonus after using the WELCOME100 promo code.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "medium",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Medium urgency with negative sentiment"
+        ],
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response states to check the status of the active welcome bonus, but it does not clarify that only one bonus can be active at a time, which is a critical part of the policy. It implies that the customer can have multiple bonuses active, which is incorrect.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response states to check the status of the active welcome bonus, but it does not clarify that only one bonus can be active at a time, which is a critical part of the policy. It implies that the customer can have multiple bonuses active, which is incorrect."
+        ],
+        "draft_grounded": true,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "bonus_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q15",
+    "expected_category": "bonus_issue",
+    "actual_category": "bonus_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 0.917
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": false,
+          "score": 0.5,
+          "issues": [
+            "Recommendation lacks action verbs (check, verify, escalate, etc.)"
+          ]
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer is inquiring about the wagering requirements for withdrawing bonus winnings.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Dear Luca Rossi,\n\nThank you for reaching out regarding your bonus winnings. To withdraw your bonus winnings, you need to complete the wagering requirements associated with your active welcome bonus. Currently, you have a wagering progress of 12 out of the required 30 times the bonus amount.\n\nTo calculate how much more you need to wager, you can refer to your bonus dashboard, where your progress is tracked. Please ensure that you place bets on eligible markets to count towards these requirements.\n\nIf you have any further questions or need assistance, feel free to ask.\n\nBest regards,\nCustomer Support Team",
+        "tone": "neutral",
+        "should_send": true,
+        "approval_required": false,
+        "reason_approval_required": null
+      },
+      "recommendation": {
+        "action_type": "no_action_needed",
+        "recommended_action": "No action needed - standard inquiry regarding wagering requirements.",
+        "target_team": "Customer Support",
+        "reason": "The customer is inquiring about the wagering requirements for withdrawing bonus winnings, which is a standard inquiry. The customer has an active bonus with wagering requirements that are not yet met, and they have been informed about the conditions in the bonus policy.",
+        "relevant_policy_sources": [
+          "bonus_policy.md"
+        ],
+        "missing_information": [],
+        "human_review_required": false
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": false,
+      "safe_fallback": false,
+      "policy_sources": [
+        "bonus_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q16",
+    "expected_category": "bonus_issue",
+    "actual_category": "bonus_issue",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 1.0
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "negative",
+        "summary": "The customer is requesting the reinstatement of an expired bonus that was close to meeting the wagering requirement.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "medium",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Medium urgency with negative sentiment"
+        ],
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear Luca Rossi,\n\nThank you for reaching out regarding your bonus. I understand your concern about the expiration of your bonus and your progress towards meeting the wagering requirements.\n\nAs per our bonus policy, bonuses are automatically forfeited if the wagering requirements are not met within the validity period. Unfortunately, once a bonus has expired, it cannot be reinstated unless a system error is confirmed.\n\nIf you believe there was an error, please provide any additional details that may help us review your case further. We appreciate your understanding and patience in this matter.\n\nBest regards,\nCustomer Support Team",
+        "tone": "empathetic",
+        "should_send": true,
+        "approval_required": false,
+        "reason_approval_required": null
+      },
+      "recommendation": {
+        "action_type": "check_bonus_status",
+        "recommended_action": "Verify the status of the expired bonus and check for any system errors that may have led to the bonus not being reinstated.",
+        "target_team": "Promotions",
+        "reason": "The customer is requesting reinstatement of an expired bonus, which is typically forfeited unless a system error is confirmed. We need to ensure there are no errors before proceeding.",
+        "relevant_policy_sources": [
+          "bonus_policy.md"
+        ],
+        "missing_information": [
+          "confirmation of any system errors related to the bonus expiration"
+        ],
+        "human_review_required": false
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": false,
+      "safe_fallback": false,
+      "policy_sources": [
+        "bonus_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q17",
+    "expected_category": "bonus_issue",
+    "actual_category": "bonus_issue",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 0.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.517
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer is inquiring about a missing loyalty bonus.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Customer has active responsible gaming flag"
+        ],
+        "category": "bonus_issue",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response mentions reviewing 'recent deposits and any applicable promo codes' for the loyalty bonus, but the policy does not specify that promo codes are applicable to loyalty bonuses. The policy only mentions promo codes in the context of bonuses not credited.; The response mentions checking if the bonus was forfeited due to unmet wagering requirements, but the policy does not specify wagering requirements for loyalty bonuses or any other bonuses. It only mentions checking for system errors or active bonuses.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.8,
+        "issues": [
+          "The response mentions reviewing 'recent deposits and any applicable promo codes' for the loyalty bonus, but the policy does not specify that promo codes are applicable to loyalty bonuses. The policy only mentions promo codes in the context of bonuses not credited.",
+          "The response mentions checking if the bonus was forfeited due to unmet wagering requirements, but the policy does not specify wagering requirements for loyalty bonuses or any other bonuses. It only mentions checking for system errors or active bonuses."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "bonus_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q18",
+    "expected_category": "account_verification",
+    "actual_category": "account_verification",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 0.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.6
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "account_verification",
+        "urgency": "medium",
+        "sentiment": "negative",
+        "summary": "The customer is frustrated about the delay in account verification after submitting required documents.",
+        "requires_human_review": true,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "medium",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Medium urgency with negative sentiment"
+        ],
+        "category": "account_verification",
+        "urgency": "medium",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response states that the case will be reviewed by the Compliance team, but it does not specify that this escalation is necessary only if the verification is overdue (more than 48 hours) and that the customer should be informed of the expected timeline if documents are found in the queue. The response lacks clarity on whether documents were found or not.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response states that the case will be reviewed by the Compliance team, but it does not specify that this escalation is necessary only if the verification is overdue (more than 48 hours) and that the customer should be informed of the expected timeline if documents are found in the queue. The response lacks clarity on whether documents were found or not."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "account_verification_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q19",
+    "expected_category": "account_verification",
+    "actual_category": "account_verification",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 0.917
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 1.0
+    },
+    "observed": {
+      "classification": {
+        "category": "account_verification",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer has uploaded a clearer document for account verification after the previous one was rejected due to blurriness.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "account_verification",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Dear Sophie Dupont,\n\nThank you for your message. We appreciate your prompt action in uploading a clearer document for your account verification. \n\nYour new submission will be reviewed by our Compliance team within the next 24\u201348 hours. If the document meets our verification criteria, your account will be marked as \"verified\".\n\nShould you have any further questions or require assistance in the meantime, please feel free to reach out.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "neutral",
+        "should_send": true,
+        "approval_required": false,
+        "reason_approval_required": null
+      },
+      "recommendation": {
+        "action_type": "check_queue",
+        "recommended_action": "Check the verification queue for the newly uploaded document from Sophie Dupont and confirm its status.",
+        "target_team": "Compliance",
+        "reason": "The customer has submitted a clearer document for verification after the previous one was rejected. According to the verification policy, documents are reviewed by the Compliance team within 24\u201348 hours, and it is important to ensure that the new document is being processed.",
+        "relevant_policy_sources": [
+          "account_verification_policy.md"
+        ],
+        "missing_information": [
+          "verification queue status for CUST-1005",
+          "timestamp of the new document upload"
+        ],
+        "human_review_required": false
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": false,
+      "safe_fallback": false,
+      "policy_sources": [
+        "account_verification_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q20",
+    "expected_category": "account_verification",
+    "actual_category": "account_verification",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.717
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "account_verification",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer is inquiring about the necessity of account verification before playing.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "account_verification",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The statement 'allowing you to play without further issues' is not supported by the policy, as it does not specify what 'play' refers to or that verification directly relates to playing.; The statement that 'it has been five days since submission' is not supported by the policy, which states that documents are reviewed within 24-48 hours. The policy does not specify what to do if the review takes longer than this timeframe.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The statement 'allowing you to play without further issues' is not supported by the policy, as it does not specify what 'play' refers to or that verification directly relates to playing.",
+          "The statement that 'it has been five days since submission' is not supported by the policy, which states that documents are reviewed within 24-48 hours. The policy does not specify what to do if the review takes longer than this timeframe."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "account_verification_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q21",
+    "expected_category": "responsible_gaming",
+    "actual_category": "responsible_gaming",
+    "scores": {
+      "classification": 0.667,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.717
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 0.9
+    },
+    "observed": {
+      "classification": {
+        "category": "responsible_gaming",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer wants assistance in setting a self-exclusion period from gambling.",
+        "requires_human_review": true,
+        "sensitive_case": true,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Responsible gaming case - mandatory human review",
+          "Customer has active responsible gaming flag",
+          "Classified as sensitive case"
+        ],
+        "category": "responsible_gaming",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The statement 'Your request will be reviewed by our Responsible Gaming team, who will ensure that it is processed promptly.' is misleading; the policy states that self-exclusion requests must be processed within 1 hour of receipt, not reviewed.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The statement 'Your request will be reviewed by our Responsible Gaming team, who will ensure that it is processed promptly.' is misleading; the policy states that self-exclusion requests must be processed within 1 hour of receipt, not reviewed."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "responsible_gaming_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q22",
+    "expected_category": "responsible_gaming",
+    "actual_category": "responsible_gaming",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 0.0,
+      "keywords": 1.0,
+      "aggregate": 0.8
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 0.9
+    },
+    "observed": {
+      "classification": {
+        "category": "responsible_gaming",
+        "urgency": "medium",
+        "sentiment": "neutral",
+        "summary": "The customer wants to set a daily deposit limit of \u20ac50.",
+        "requires_human_review": true,
+        "sensitive_case": true,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Responsible gaming case - mandatory human review",
+          "Customer has active responsible gaming flag",
+          "Classified as sensitive case"
+        ],
+        "category": "responsible_gaming",
+        "urgency": "medium",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response states that the customer has a high risk level and an active responsible gaming flag, but there is no mention in the policy context about how to determine a 'high risk level' or what constitutes an 'active responsible gaming flag'.; The response implies that a mandatory human review is required before any changes to deposit limits can be made, but the policy does not specify that a review is mandatory for all deposit limit changes, only that at-risk behaviour must be flagged for review.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response states that the customer has a high risk level and an active responsible gaming flag, but there is no mention in the policy context about how to determine a 'high risk level' or what constitutes an 'active responsible gaming flag'.",
+          "The response implies that a mandatory human review is required before any changes to deposit limits can be made, but the policy does not specify that a review is mandatory for all deposit limit changes, only that at-risk behaviour must be flagged for review."
+        ],
+        "draft_grounded": true,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "responsible_gaming_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q23",
+    "expected_category": "responsible_gaming",
+    "actual_category": "responsible_gaming",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 0.5,
+      "aggregate": 0.925
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 0.9
+    },
+    "observed": {
+      "classification": {
+        "category": "responsible_gaming",
+        "urgency": "high",
+        "sentiment": "negative",
+        "summary": "The customer is expressing concern about a potential gambling problem and is seeking help.",
+        "requires_human_review": true,
+        "sensitive_case": true,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "high",
+        "requires_human_review": true,
+        "risk_factors": [
+          "Responsible gaming case - mandatory human review",
+          "Customer has active responsible gaming flag",
+          "Classified as sensitive case"
+        ],
+        "category": "responsible_gaming",
+        "urgency": "high",
+        "sentiment": "negative"
+      },
+      "draft_response": {
+        "customer_message": "Dear Erik,\n\nThank you for reaching out and expressing your concerns. It\u2019s important to prioritize your well-being, and I commend you for seeking help.\n\nI recommend contacting a national gambling helpline for support. In Sweden, you can reach out to St\u00f6dlinjen, which offers resources and assistance for individuals facing gambling issues. You can find more information on their website: [St\u00f6dlinjen](https://www.stodlinjen.se).\n\nAdditionally, I will ensure that your case is reviewed by our Responsible Gaming team for further assistance. Please know that you are not alone, and there are resources available to help you.\n\nIf you have any further questions or need additional support, please don\u2019t hesitate to reach out.\n\nBest regards,\n\n[Your Name]  \nCustomer Support Team",
+        "tone": "empathetic",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "This case requires human review due to its sensitive nature and the customer's expressed concerns regarding gambling."
+      },
+      "recommendation": {
+        "action_type": "escalate_to_team",
+        "recommended_action": "Flag for Responsible Gaming team review and log the interaction in the audit trail.",
+        "target_team": "Responsible Gaming",
+        "reason": "The customer has expressed concerns about potential gambling problems, which indicates at-risk behaviour. According to the responsible gaming policy, such cases must be flagged for review by the Responsible Gaming team, especially since this is a sensitive case with a high risk level.",
+        "relevant_policy_sources": [
+          "responsible_gaming_policy.md"
+        ],
+        "missing_information": [],
+        "human_review_required": true
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": true,
+      "safe_fallback": false,
+      "policy_sources": [
+        "responsible_gaming_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q24",
+    "expected_category": "other",
+    "actual_category": "other",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 1.0
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": false,
+          "score": 0.5,
+          "issues": [
+            "Unexpected human review flag (conservative, not wrong)"
+          ]
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "other",
+        "urgency": "low",
+        "sentiment": "positive",
+        "summary": "The customer is expressing appreciation for the customer service.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "other",
+        "urgency": "low",
+        "sentiment": "positive"
+      },
+      "draft_response": {
+        "customer_message": "Thank you for contacting us. Your case will be reviewed by a specialist. A member of our team will follow up with you shortly. We appreciate your patience.",
+        "tone": "formal",
+        "should_send": false,
+        "approval_required": true,
+        "reason_approval_required": "Draft failed groundedness check after maximum retries. Replaced with safe template for manual review."
+      },
+      "recommendation": {
+        "recommended_action": "Manual review required - original draft was not grounded in policy.",
+        "reason": "Groundedness check failed: The response does not acknowledge any customer frustration or summarize any issue, which is required for de-escalation according to the policy.; The response does not provide a clear resolution path, which is also required for de-escalation.; The response states 'No action needed - standard inquiry' which does not align with the policy that requires action if a customer is expressing appreciation but there are unresolved issues or complaints. The policy emphasizes de-escalation if the issue can be resolved at the current tier, but it does not support the claim that no action is needed if there are unresolved issues.",
+        "relevant_policy_sources": [],
+        "missing_information": [],
+        "human_review_required": true,
+        "status": "rejected_by_groundedness_check"
+      },
+      "groundedness_check": {
+        "is_grounded": false,
+        "confidence": 0.9,
+        "issues": [
+          "The response does not acknowledge any customer frustration or summarize any issue, which is required for de-escalation according to the policy.",
+          "The response does not provide a clear resolution path, which is also required for de-escalation.",
+          "The response states 'No action needed - standard inquiry' which does not align with the policy that requires action if a customer is expressing appreciation but there are unresolved issues or complaints. The policy emphasizes de-escalation if the issue can be resolved at the current tier, but it does not support the claim that no action is needed if there are unresolved issues."
+        ],
+        "draft_grounded": false,
+        "recommendation_grounded": false
+      },
+      "draft_retries": 2,
+      "pending_review": true,
+      "safe_fallback": true,
+      "policy_sources": [
+        "escalation_policy.md"
+      ]
+    },
+    "status": "ok"
+  },
+  {
+    "id": "q25",
+    "expected_category": "other",
+    "actual_category": "other",
+    "scores": {
+      "classification": 1.0,
+      "retrieval": 1.0,
+      "sensitivity": 1.0,
+      "response_quality": 1.0,
+      "keywords": 1.0,
+      "aggregate": 1.0
+    },
+    "separation": {
+      "checks": {
+        "draft_is_customer_safe": {
+          "is_safe": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "recommendation_is_internal": {
+          "is_internal": false,
+          "score": 0.5,
+          "issues": [
+            "Recommendation lacks action verbs (check, verify, escalate, etc.)"
+          ]
+        },
+        "no_unconfirmed_actions": {
+          "no_unconfirmed": true,
+          "score": 1.0,
+          "issues": []
+        },
+        "missing_info_quality": {
+          "has_missing_info": false,
+          "score": 0.5,
+          "issues": [
+            "missing_information is empty - should list what's still needed"
+          ]
+        },
+        "approval_correctness": {
+          "correct": true,
+          "score": 1.0,
+          "issues": []
+        }
+      },
+      "aggregate": 0.8
+    },
+    "observed": {
+      "classification": {
+        "category": "other",
+        "urgency": "low",
+        "sentiment": "neutral",
+        "summary": "The message does not contain any relevant information regarding an issue.",
+        "requires_human_review": false,
+        "sensitive_case": false,
+        "extracted_customer_id": null
+      },
+      "risk_assessment": {
+        "risk_level": "low",
+        "requires_human_review": false,
+        "risk_factors": [
+          "Standard case - no elevated risk factors detected"
+        ],
+        "category": "other",
+        "urgency": "low",
+        "sentiment": "neutral"
+      },
+      "draft_response": {
+        "customer_message": "Hello James,\n\nThank you for reaching out. It seems that your recent message did not contain any specific inquiries or issues. If you have any questions or require assistance, please feel free to share more details, and I will be happy to help you.\n\nBest regards,\nCustomer Support Team",
+        "tone": "neutral",
+        "should_send": true,
+        "approval_required": false,
+        "reason_approval_required": null
+      },
+      "recommendation": {
+        "action_type": "no_action_needed",
+        "recommended_action": "No action needed - standard inquiry",
+        "target_team": "N/A",
+        "reason": "The customer's message does not contain any relevant information regarding an issue, and there are no escalations or actions required based on the current ticket classification and customer context.",
+        "relevant_policy_sources": [
+          "escalation_policy.md"
+        ],
+        "missing_information": [],
+        "human_review_required": false
+      },
+      "groundedness_check": {
+        "is_grounded": true,
+        "confidence": 0.9,
+        "issues": [],
+        "draft_grounded": true,
+        "recommendation_grounded": true
+      },
+      "draft_retries": 0,
+      "pending_review": false,
+      "safe_fallback": false,
+      "policy_sources": [
+        "escalation_policy.md"
+      ]
+    },
+    "status": "ok"
+  }
+]

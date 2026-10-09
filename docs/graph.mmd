@@ -31,7 +31,9 @@ graph TD
 	groundedness_check -- "not grounded 🔄<br/>(retry, max 2)" --> resolution_plan
 	groundedness_check -- "retries exhausted 🛑" --> manual_review
 	manual_review --> approval_gate
-	approval_gate --> audit_log
+	approval_gate -- no review needed --> audit_log
+    approval_gate -- review required --> human[Persisted interrupt / human decision]
+    human -- Command resume --> audit_log
 	audit_log --> final_response
 	final_response --> __end__
 

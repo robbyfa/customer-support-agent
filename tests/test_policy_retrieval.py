@@ -220,3 +220,16 @@ class TestRetrievePolicyNode:
         for chunk in result["policy_context"]:
             assert isinstance(chunk, str)
             assert len(chunk) > 0
+
+
+@pytest.mark.parametrize("category,source", [
+    ("withdrawal_issue", "withdrawal_policy.md"),
+    ("responsible_gaming", "responsible_gaming_policy.md"),
+    ("bonus_issue", "bonus_policy.md"),
+])
+def test_category_filter_excludes_unrelated_sources(store, category, source):
+    # Deliberately query a different topic so semantic similarity cannot mask a broken filter.
+    results = store.search("deposit login verification", n_results=50, category=category)
+    sources = {result["source"] for result in results}
+    assert source in sources
+    assert sources <= {source, "escalation_policy.md"}

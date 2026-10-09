@@ -10,10 +10,10 @@
 Support Agent UI (Streamlit)
       │
       ▼
-Customer message + Customer ID
+FastAPI REST API → Case service
       │
       ▼
-LangGraph Workflow
+LangGraph Workflow ↔ SQLite checkpoints
       │
       ├── Classify Ticket (structured output)
       ├── Retrieve Policy (RAG with category filtering → ChromaDB)
@@ -31,7 +31,7 @@ LangGraph Workflow
       │     ├── Grounded → Approval Gate
       │     ├── Not grounded → Retry (max 2)
       │     └── Retries exhausted → Manual Review Response
-      ├── Approval Gate (human-in-the-loop)
+      ├── Approval Gate (interrupt → persisted checkpoint → Command resume)
       ├── Audit Log (consolidated summary)
       └── Final Response
       │
@@ -40,8 +40,6 @@ Audit trail + LangSmith trace
 ```
 
 ## LangGraph Workflow
-
-![LangGraph Workflow](docs/graph.png)
 
 ```mermaid
 graph TD
@@ -57,7 +55,9 @@ graph TD
     groundedness_check -- not grounded --> generate_resolution_plan
     groundedness_check -- retries exhausted --> manual_review_response
     manual_review_response --> approval_gate
-    approval_gate --> audit_log
+    approval_gate -- no review needed --> audit_log
+    approval_gate -- review required --> human[Persisted interrupt / human decision]
+    human -- Command resume --> audit_log
     audit_log --> final_response
     final_response --> End
 ```
@@ -67,7 +67,7 @@ graph TD
 - **Conditional routing**: Responsible gaming cases fast-track through minimal context to prioritise safety over deep analysis.
 - **Dual groundedness check**: Both the customer-facing draft and the internal recommendation are verified against policy before approval.
 - **Manual review fallback**: If the LLM cannot produce a grounded response after 2 retries, a safe templated response is used instead.
-- **PII masking**: Customer names and emails are masked in the final output and audit trail.
+- **PII masking**: Customer profile names and emails are masked in API previews and final output. Raw checkpoints remain local; see persistence limits below.
 
 ---
 
@@ -82,7 +82,9 @@ graph TD
 | Risk assessment | Rule-based engine with 5 priority-ordered risk rules |
 | Response generation | Separate chains for customer draft (what to SAY) and internal recommendation (what to DO) |
 | Groundedness checking | LLM-based verification of both outputs against policy context |
-| Human-in-the-loop | Approval gate that blocks customer-facing actions pending human review |
+| Durable human-in-the-loop | LangGraph interrupt + SQLite checkpoint + audited approve/reject resume |
+| Backend API | Async FastAPI endpoints, Pydantic contracts, service layer, idempotent decisions |
+| CI and containers | Ruff, pytest, retrieval smoke evaluation, Docker build; separate API/UI services |
 | Audit trail | Every node logs step name, timestamp, and key metadata |
 | Evaluation framework | 25 eval cases, 5 evaluation dimensions, weighted aggregate scoring |
 | Separation evals | 5 evaluators checking draft vs recommendation boundaries |
@@ -151,7 +153,7 @@ graph TD
 | `get_bonus_status` | Read-only | Active bonuses, wagering progress |
 | `search_policy_documents` | Read-only | RAG search over policy corpus |
 
-The agent can **recommend** and **draft** but never execute dangerous actions (send messages, close accounts, issue refunds) without approval.
+The agent can **recommend** and **draft**. Approval records a human decision; this demo never sends messages, closes accounts, or issues refunds.
 
 ---
 
@@ -200,24 +202,30 @@ uv run python mcp_server/server.py --transport http --port 8100  # HTTP
 
 ## Approval Gate
 
-The copilot stops before any customer-facing action:
+Reviewable cases suspend graph execution before the audit summary and final output:
 
 ```
-Proposed action: Send draft response to CUST-1001
+Draft awaiting review: CUST-1001
 Risk level: high
 Human review required: yes
 
 [✅ Approve]  [❌ Reject]
 ```
 
-- **Approve** → Message would be sent, ticket status updated
-- **Reject** → Draft saved for manual review, case escalated to specialist
+- **Approve** → Resume the checkpoint, record the decision, finish with `approved`.
+- **Reject** → Resume the checkpoint, record the decision, finish with `rejected`.
 
-This is one of the most important features - it shows safe agent design.
+Both paths retain the draft and reviewer rationale. No external action is executed.
 
 ---
 
 ## Evaluation
+
+The checked-in [evaluation report](docs/evaluation-results.md) contains a real,
+live 25-case workflow run, measured scores, generated outputs, and per-case failures.
+The separate [retrieval smoke report](docs/retrieval-smoke-results.md) measures
+retrieval with supplied categories. Run the no-key smoke
+check with `uv run python -m evals.smoke`.
 
 ### Dataset
 25 evaluation cases covering all 6 issue types plus edge cases.
@@ -245,7 +253,8 @@ Run evals:
 uv run python -m evals.run_evals                    # full suite
 uv run python -m evals.run_evals --category withdrawal_issue
 uv run python -m evals.run_evals --question q01
-uv run python -m evals.run_evals --output results.json
+uv run python -m evals.run_evals --output docs/full-evaluation-results.json
+uv run python -m evals.report                       # render saved results without API calls
 ```
 
 ---
@@ -275,18 +284,88 @@ cp .env.example .env
 ### Run
 
 ```bash
-# CLI - run all 6 demo scenarios
+# Start the API first (one worker)
+uv run uvicorn backend.api:app --host 127.0.0.1 --port 8000 --workers 1
+
+# In another terminal: CLI demo
 uv run python main.py
 
-# Streamlit UI
+# Or Streamlit UI
 uv run streamlit run app.py
 
 # Tests
-uv run pytest -v
+uv run pytest -m "not llm" -v
 
 # Linting
 uv run ruff check .
 ```
+
+### Durable approvals and API
+
+Cases requiring review stop inside LangGraph's `interrupt()` before `audit_log`
+and `final_response`. The API owns an `AsyncSqliteSaver` and uses the case UUID
+as the graph `thread_id`. Approve/reject resumes that checkpoint with
+`Command(resume=...)`; rejection produces a terminal `rejected` result. Cases
+without review flags finish automatically. This follows the
+[LangGraph interrupt contract](https://docs.langchain.com/oss/python/langgraph/interrupts).
+
+| Endpoint | Behavior |
+|---|---|
+| `POST /cases` | Process a message until completion or human review; returns a case ID |
+| `GET /cases/{id}` | Read saved status, masked preview, and final output if completed |
+| `POST /cases/{id}/approve` | Resume with approval, reviewer name, and reason |
+| `POST /cases/{id}/reject` | Resume with rejection, reviewer name, and reason |
+| `GET /cases/{id}/audit` | Read the checkpoint's persisted audit trail |
+| `GET /health` | Startup readiness check |
+
+Interactive API documentation: [localhost:8000/docs](http://localhost:8000/docs).
+
+```bash
+curl -X POST http://127.0.0.1:8000/cases \
+  -H 'Content-Type: application/json' \
+  -d '{"customer_message":"I want to self-exclude","customer_id":"CUST-1006"}'
+# Use the returned case ID:
+curl -X POST http://127.0.0.1:8000/cases/CASE_ID/approve \
+  -H 'Content-Type: application/json' \
+  -d '{"reviewer":"Demo agent","reason":"Reviewed the policy and draft"}'
+```
+
+Streamlit calls this API over HTTP. Save its `?case=...` URL or enter the case ID
+to reopen a pending case after restarting both services. No decision depends on
+Streamlit session state. Exact decision retries are idempotent; conflicting or
+inapplicable decisions return 409. Unknown cases return 404, invalid input 422.
+Processing failures leave a readable `failed` checkpoint without exposing provider
+error details. Interrupted execution from an abrupt crash outside the approval
+gate may appear as `running`; automatic recovery of such runs is not implemented.
+
+This is a local, single-worker demo. A service lock serializes execution and
+reads; it does not coordinate multiple workers or replicas. The API has no
+authentication, and reviewer names are self-reported. Add authenticated identity,
+authorization, and database-backed concurrency control before exposing it to
+other users. Approval records a decision only: it does not send messages, move
+funds, or mutate customer accounts.
+
+`CHECKPOINT_DB` defaults to `runtime/checkpoints.sqlite`. Checkpoints retain raw
+customer messages and workflow context on disk, even though API previews and
+final customer profiles are masked. Use only the synthetic data supplied here;
+configure retention, encryption, and access controls for real customer data.
+
+### Containers and CI
+
+```bash
+cp .env.example .env  # add your OpenAI key
+docker compose up --build
+```
+
+The API and UI run as separate services. Both health checks use Python's standard
+library, so the slim image does not need curl. A named volume preserves SQLite
+checkpoints across container replacement; `docker compose down -v` removes them.
+The image excludes `.env`, local checkpoints, and the virtual environment.
+
+[CI workflow](.github/workflows/ci.yml) runs Ruff, all non-LLM tests, the retrieval
+smoke evaluation, and a Docker build on pushes and pull requests. It uploads the
+smoke report as a workflow artifact. A green GitHub check appears only after the
+workflow has actually run in the remote repository.
 
 ### LangSmith tracing (optional)
 
@@ -304,7 +383,8 @@ LANGCHAIN_PROJECT=customer-support-copilot
 
 ```
 customer-support-agent/
-├── app.py                          # Streamlit UI
+├── backend/                        # FastAPI endpoints and durable case service
+├── app.py                          # Streamlit HTTP client
 ├── main.py                         # CLI entry point
 ├── pyproject.toml                  # Dependencies (managed by uv)
 ├── .env.example                    # Environment variable template
@@ -361,7 +441,7 @@ customer-support-agent/
 │   ├── separation_evals.py         # Draft vs recommendation boundary checks
 │   └── run_evals.py                # CLI evaluation runner
 │
-├── tests/                          # 159+ tests
+├── tests/                          # Unit, checkpoint, API, UI, and integration tests
 │   ├── test_schemas.py
 │   ├── test_tools.py
 │   ├── test_policy_retrieval.py

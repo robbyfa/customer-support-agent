@@ -308,35 +308,25 @@ from graph.nodes.final_response import final_response
 
 
 class TestApprovalGateNode:
-    def test_risk_requires_review_not_approved(self):
-        state = {
-            "risk_assessment": {"requires_human_review": True},
-            "draft_response": {"approval_required": False},
-            "classification": {"sensitive_case": False},
-            "audit_trail": [],
-        }
-        result = approval_gate(state)
-        assert result["approved"] is False
+    @pytest.mark.parametrize("field,flag", [
+        ("risk_assessment", "requires_human_review"),
+        ("draft_response", "approval_required"),
+        ("classification", "sensitive_case"),
+    ])
+    def test_review_interrupts(self, field, flag):
+        from langgraph.checkpoint.memory import InMemorySaver
+        from langgraph.graph import START, StateGraph
 
-    def test_draft_requires_approval_not_approved(self):
-        state = {
-            "risk_assessment": {"requires_human_review": False},
-            "draft_response": {"approval_required": True},
-            "classification": {"sensitive_case": False},
-            "audit_trail": [],
-        }
-        result = approval_gate(state)
-        assert result["approved"] is False
+        from graph.state import GraphState
 
-    def test_sensitive_case_not_approved(self):
-        state = {
-            "risk_assessment": {"requires_human_review": False},
-            "draft_response": {"approval_required": False},
-            "classification": {"sensitive_case": True},
-            "audit_trail": [],
-        }
-        result = approval_gate(state)
-        assert result["approved"] is False
+        graph = StateGraph(GraphState)
+        graph.add_node("gate", approval_gate)
+        graph.add_edge(START, "gate")
+        app = graph.compile(checkpointer=InMemorySaver())
+        result = app.invoke({field: {flag: True}}, {"configurable": {"thread_id": "test"}})
+        assert result["__interrupt__"]
+        assert result.get("approved") is None
+        assert not result.get("audit_trail")
 
     def test_no_review_needed_approved(self):
         state = {
@@ -384,7 +374,7 @@ class TestFinalResponseNode:
         assert fo["approved"] is True
         assert fo["customer_id"] == "CUST-1001"
 
-    def test_pending_review_status(self):
+    def test_rejected_status(self):
         state = {
             "customer_message": "Self-exclusion request.",
             "customer_id": "CUST-1006",
@@ -400,7 +390,7 @@ class TestFinalResponseNode:
         result = final_response(state)
 
         fo = result["final_output"]
-        assert fo["status"] == "pending_review"
+        assert fo["status"] == "rejected"
         assert fo["approved"] is False
 
     def test_final_output_has_all_keys(self):
@@ -465,9 +455,12 @@ class TestEndToEndGraph:
         configure_registry(vs)
 
     def test_failed_withdrawal_full_run(self):
+        from langgraph.types import Command
+
         from graph.graph import build_graph
 
         app = build_graph()
+        config = {"configurable": {"thread_id": "e2e"}}
         result = app.invoke(
             {
                 "customer_message": (
@@ -476,8 +469,13 @@ class TestEndToEndGraph:
                 ),
                 "customer_id": "CUST-1001",
                 "audit_trail": [],
-            }
+            }, config
         )
+        assert result["__interrupt__"]
+        assert not result.get("final_output")
+        result = app.invoke(Command(resume={
+            "approved": False, "reviewer": "test", "reason": "Needs specialist review",
+        }), config)
 
         # final_output should exist
         fo = result["final_output"]
@@ -506,7 +504,7 @@ class TestEndToEndGraph:
 
         # High-risk → not approved
         assert fo["approved"] is False
-        assert fo["status"] == "pending_review"
+        assert fo["status"] == "rejected"
 
         # Audit trail has entries for all 7 nodes
         trail = result["audit_trail"]

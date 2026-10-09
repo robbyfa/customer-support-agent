@@ -1,24 +1,10 @@
 FROM python:3.12-slim
-
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
+COPY --from=ghcr.io/astral-sh/uv:0.9.4 /uv /uvx /bin/
 WORKDIR /app
-
-# Copy dependency files first for layer caching
 COPY pyproject.toml uv.lock ./
-
-# Install dependencies (no dev deps in production)
 RUN uv sync --frozen --no-dev
-
-# Copy application code
 COPY . .
-
-# Expose Streamlit port
-EXPOSE 8501
-
-# Health check
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
-
-# Run Streamlit
-CMD ["uv", "run", "streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
+ENV PATH="/app/.venv/bin:$PATH"
+EXPOSE 8000 8501
+HEALTHCHECK --start-period=120s CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"
+CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

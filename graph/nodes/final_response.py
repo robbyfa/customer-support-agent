@@ -39,7 +39,7 @@ def final_response(state: GraphState) -> dict[str, Any]:
         "recommendation": recommendation,
         "draft_response": draft,
         "approved": approved,
-        "status": "approved" if approved else "pending_review",
+        "status": "approved" if approved else "rejected",
     }
 
     audit_entry = {

@@ -32,6 +32,7 @@ class GraphState(TypedDict, total=False):
     draft_response: dict[str, Any] | None
     groundedness_check: dict[str, Any] | None
     draft_retries: int
+    review_decision: dict[str, Any] | None
     approved: bool | None
     final_output: dict[str, Any] | None
     audit_trail: list[dict[str, Any]]

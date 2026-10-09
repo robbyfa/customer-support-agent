@@ -8,10 +8,15 @@ Usage:
 """
 
 import argparse
+import hashlib
+import importlib.metadata
 import json
 import os
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from dotenv import load_dotenv
 
@@ -22,6 +27,7 @@ if not os.getenv("LANGCHAIN_TRACING_V2"):
 
 from evals.dataset import get_by_category, get_dataset
 from evals.evaluators import evaluate_response
+from evals.separation_evals import evaluate_separation
 from storage.vector_store import PolicyVectorStore
 from tools.registry import configure
 
@@ -65,8 +71,13 @@ def run_eval(
                     "customer_id": case["customer_id"],
                     "audit_trail": [],
                     "draft_retries": 0,
-                }
+                },
+                {"configurable": {"thread_id": str(uuid4())}},
             )
+            if not output.get("final_output"):
+                output["final_output"] = {key: output.get(key, {}) for key in (
+                    "classification", "risk_assessment", "draft_response", "recommendation",
+                )}
             scores = evaluate_response(case, output)
 
             actual_cat = output.get("final_output", {}).get("classification", {}).get("category", "?")
@@ -88,18 +99,34 @@ def run_eval(
                 "expected_category": case["expected_category"],
                 "actual_category": actual_cat,
                 "scores": scores,
+                "separation": evaluate_separation(case, output),
+                "observed": {
+                    "classification": output.get("classification"),
+                    "risk_assessment": output.get("risk_assessment"),
+                    "draft_response": output.get("draft_response"),
+                    "recommendation": output.get("recommendation"),
+                    "groundedness_check": output.get("groundedness_check"),
+                    "draft_retries": output.get("draft_retries", 0),
+                    "pending_review": bool(output.get("__interrupt__")),
+                    "safe_fallback": any(e.get("step") == "manual_review_response"
+                                         for e in output.get("audit_trail", [])),
+                    "policy_sources": sorted({source for e in output.get("audit_trail", [])
+                                              if e.get("step") == "retrieve_policy"
+                                              for source in e.get("sources", [])}),
+                },
                 "status": "ok",
             })
 
         except Exception as e:
-            print(f"  🔴 ERROR: {e}")
+            error = type(e).__name__
+            print(f"  🔴 ERROR: {error}")
             results.append({
                 "id": case["id"],
                 "expected_category": case["expected_category"],
                 "actual_category": "error",
                 "scores": {"aggregate": 0.0},
                 "status": "error",
-                "error": str(e),
+                "error": error,
             })
 
     return results
@@ -173,13 +200,28 @@ def main():
         cases = get_dataset()
 
     print(f"Running {len(cases)} evaluation case(s)...")
+    started_at = datetime.now(UTC).isoformat()
     results = run_eval(app, cases)
     print_summary(results)
 
     if args.output:
         with open(args.output, "w") as f:
             json.dump(results, f, indent=2)
+        metadata = {
+            "started_at": started_at,
+            "finished_at": datetime.now(UTC).isoformat(),
+            "model": os.getenv("MODEL_NAME", "gpt-4o-mini"),
+            "temperatures": {"classification": 0, "draft": 0.3, "recommendation": 0, "groundedness": 0},
+            "dataset_sha256": hashlib.sha256(json.dumps(cases, sort_keys=True).encode()).hexdigest(),
+            "case_count": len(cases),
+            "packages": {name: importlib.metadata.version(name) for name in
+                         ("langgraph", "langchain-openai", "chromadb", "onnxruntime")},
+            "review_mode": "Score suspended drafts; never resume or approve cases",
+        }
+        Path(args.output).with_suffix(".metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
         print(f"\nResults saved to {args.output}")
+    if any(r["status"] == "error" for r in results):
+        sys.exit(1)
 
 
 if __name__ == "__main__":

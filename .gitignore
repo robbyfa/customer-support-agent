@@ -38,3 +38,10 @@ htmlcov/
 # Distribution
 *.whl
 *.tar.gz
+
+# Durable case state (contains customer messages and context)
+runtime/
+*.sqlite*
+
+# Chroma ephemeral-store sidecar
+:memory:.ses

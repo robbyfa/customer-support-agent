@@ -6,6 +6,7 @@ Usage:
 
 import os
 
+import httpx
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -15,8 +16,6 @@ if not os.getenv("LANGCHAIN_TRACING_V2"):
     os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
 from storage.mock_data import load_customers
-from storage.vector_store import PolicyVectorStore
-from tools.registry import configure
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -95,7 +94,6 @@ def init_session_state():
         "result": None,
         "customer_id": "CUST-1001",
         "customer_message": "",
-        "approved_action": None,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -109,23 +107,18 @@ init_session_state()
 # ---------------------------------------------------------------------------
 
 
-@st.cache_resource
-def setup_stores():
-    vs = PolicyVectorStore(collection_name="copilot_ui")
-    vs.ingest_policies()
-    configure(vs)
-    return vs
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000").rstrip("/")
 
 
-@st.cache_resource
-def setup_agent():
-    setup_stores()
-    from graph.graph import build_graph
+def api_request(method, path, **kwargs):
+    try:
+        response = httpx.request(method, f"{API_URL}{path}", timeout=180, **kwargs)
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPError as exc:
+        st.error(f"API request failed: {exc}. Reload the case before retrying a decision.")
+        st.stop()
 
-    return build_graph()
-
-
-app = setup_agent()
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -176,7 +169,7 @@ with st.sidebar:
             st.session_state.customer_id = scenario["customer_id"]
             st.session_state.customer_message = scenario["message"]
             st.session_state.result = None
-            st.session_state.approved_action = None
+            st.query_params.clear()
             st.rerun()
 
     st.markdown("---")
@@ -215,18 +208,22 @@ with col_button:
 
 if run_clicked and message.strip():
     st.session_state.customer_message = message
-    st.session_state.approved_action = None
 
     with st.spinner("Running copilot pipeline..."):
-        result = app.invoke(
-            {
-                "customer_message": message,
-                "customer_id": st.session_state.customer_id,
-                "audit_trail": [],
-                "draft_retries": 0,
-            }
-        )
+        result = api_request("POST", "/cases", json={
+            "customer_message": message,
+            "customer_id": st.session_state.customer_id,
+        })
         st.session_state.result = result
+        st.query_params["case"] = result["id"]
+
+# The URL preserves the case identity even after a browser/server restart.
+case_id = st.text_input("Open saved case ID", value=st.query_params.get("case", ""))
+if st.button("Load / refresh case") and case_id:
+    st.session_state.result = api_request("GET", f"/cases/{case_id}")
+    st.query_params["case"] = case_id
+if st.session_state.result is None and st.query_params.get("case"):
+    st.session_state.result = api_request("GET", f"/cases/{st.query_params['case']}")
 
 # ---------------------------------------------------------------------------
 # Results display
@@ -235,49 +232,42 @@ if run_clicked and message.strip():
 result = st.session_state.result
 
 if result:
-    fo = result.get("final_output", {})
-    classification = fo.get("classification", {})
-    risk = fo.get("risk_assessment", {})
-    draft = fo.get("draft_response", {})
-    recommendation = fo.get("recommendation", {})
+    fo = result.get("final_output") or result.get("preview", {})
+    classification = fo.get("classification") or {}
+    risk = fo.get("risk_assessment") or {}
+    draft = fo.get("draft_response") or {}
+    recommendation = fo.get("recommendation") or {}
     ctx = fo.get("customer_context", {})
     flags = ctx.get("flags", {}) if isinstance(ctx, dict) else {}
-    gc = result.get("groundedness_check", {})
+    gc = result.get("groundedness_check") or {}
 
     st.markdown("---")
 
     # ── 1. Approval status + Recommendation (top priority) ──────────
-    if draft.get("approval_required") or risk.get("requires_human_review"):
+    st.caption(f"Case ID: {result['id']} · Status: {result['status']}")
+    if result["status"] == "pending_review":
         st.subheader("🔒 Approval Required")
-        if draft.get("reason_approval_required"):
-            st.caption(f"Reason: {draft['reason_approval_required']}")
-
-        col_approve, col_reject, _ = st.columns([1, 1, 3])
-        with col_approve:
-            if st.button("✅ Approve", type="primary", use_container_width=True):
-                st.session_state.approved_action = "approved"
-                st.rerun()
-        with col_reject:
-            if st.button("❌ Reject", use_container_width=True):
-                st.session_state.approved_action = "rejected"
-                st.rerun()
-
-        if st.session_state.approved_action == "approved":
-            st.success(
-                "✅ **Response approved** - ready to send to customer.\n\n"
-                f"*Mock action: message would be sent to "
-                f"{fo.get('customer_id', 'unknown')}. "
-                f"Ticket status → resolved.*"
-            )
-        elif st.session_state.approved_action == "rejected":
-            st.error(
-                "❌ **Response rejected** - draft saved for manual review.\n\n"
-                f"*Mock action: case escalated to specialist team for "
-                f"{classification.get('category', 'unknown')}. "
-                f"Draft preserved in audit trail for reference.*"
-            )
+        st.caption("Execution is suspended. Submit a decision to resume the saved case.")
+        reviewer = st.text_input("Reviewer name")
+        reason = st.text_area("Decision reason")
+        col_approve, col_reject = st.columns(2)
+        for column, action, label in (
+            (col_approve, "approve", "✅ Approve"),
+            (col_reject, "reject", "❌ Reject"),
+        ):
+            with column:
+                if st.button(label, disabled=not (reviewer.strip() and reason.strip())):
+                    st.session_state.result = api_request(
+                        "POST", f"/cases/{result['id']}/{action}",
+                        json={"reviewer": reviewer, "reason": reason},
+                    )
+                    st.rerun()
+    elif result["status"] == "approved":
+        st.success("Response approved. No customer message or account action is executed in this demo.")
+    elif result["status"] == "rejected":
+        st.error("Response rejected. Draft retained for manual handling.")
     else:
-        st.success("✅ Auto-approved - no human review required.")
+        st.warning("Case execution is incomplete or failed. The saved audit is available below.")
 
     # ── 2. Draft response (what to SAY) ────────────────────────────
     st.subheader(f"✉️ Draft Response - tone: {draft.get('tone', '?')}")

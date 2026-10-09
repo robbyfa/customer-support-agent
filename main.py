@@ -9,21 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from storage.vector_store import PolicyVectorStore
-from tools.registry import configure
+import os
 
-# ---------------------------------------------------------------------------
-# Setup
-# ---------------------------------------------------------------------------
-
-
-def setup() -> None:
-    """Initialize the vector store and configure the tool registry."""
-    vs = PolicyVectorStore(collection_name="copilot_policies")
-    count = vs.ingest_policies()
-    print(f"✓ Ingested {count} policy chunks into vector store\n")
-    configure(vs)
-
+import httpx
 
 # ---------------------------------------------------------------------------
 # Demo scenarios
@@ -88,12 +76,12 @@ SCENARIOS = [
 
 def render_copilot_response(scenario_name: str, result: dict) -> None:
     """Pretty-print the copilot output to the terminal."""
-    fo = result.get("final_output", {})
-    classification = fo.get("classification", {})
-    risk = fo.get("risk_assessment", {})
-    draft = fo.get("draft_response", {})
-    recommendation = fo.get("recommendation", {})
-    ctx = fo.get("customer_context", {})
+    fo = result.get("final_output") or result.get("preview", {})
+    classification = (fo.get("classification") or {})
+    risk = (fo.get("risk_assessment") or {})
+    draft = (fo.get("draft_response") or {})
+    recommendation = (fo.get("recommendation") or {})
+    ctx = (fo.get("customer_context") or {})
     flags = ctx.get("flags", {}) if isinstance(ctx, dict) else {}
 
     sep = "═" * 70
@@ -128,7 +116,7 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
             print(f"     • {factor}")
 
     # Groundedness
-    gc = result.get("groundedness_check", {})
+    gc = (result.get("groundedness_check") or {})
     if gc:
         grounded = "✅ Yes" if gc.get("is_grounded") else "❌ No"
         print("\n  🔍 Groundedness Check")
@@ -152,10 +140,13 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
     status = fo.get("status", "?")
     if status == "approved":
         print("\n  ✅ Status: APPROVED - ready to send")
-    else:
+    elif status == "pending_review":
         print("\n  🔒 Status: PENDING REVIEW - requires human approval")
         if draft.get("reason_approval_required"):
             print(f"     Reason: {draft['reason_approval_required']}")
+
+    else:
+        print(f"\n  Status: {status.upper()}")
 
     # Audit trail
     trail = result.get("audit_trail", [])
@@ -172,27 +163,15 @@ def render_copilot_response(scenario_name: str, result: dict) -> None:
 
 
 def main() -> None:
-    """Run all demo scenarios through the copilot graph."""
-    setup()
-
-    from graph.graph import build_graph
-
-    app = build_graph()
-
-    print(f"Running {len(SCENARIOS)} demo scenarios...\n")
-
+    url = os.getenv("API_URL", "http://127.0.0.1:8000").rstrip("/")
     for scenario in SCENARIOS:
-        print(f"▶ Running: {scenario['name']}...")
-
-        result = app.invoke(
-            {
-                "customer_message": scenario["message"],
-                "customer_id": scenario["customer_id"],
-                "audit_trail": [],
-                "draft_retries": 0,
-            }
-        )
-
+        response = httpx.post(f"{url}/cases", json={
+            "customer_message": scenario["message"],
+            "customer_id": scenario["customer_id"],
+        }, timeout=180)
+        response.raise_for_status()
+        result = response.json()
+        print(f"Case {result['id']}: {result['status']}")
         render_copilot_response(scenario["name"], result)
 
 

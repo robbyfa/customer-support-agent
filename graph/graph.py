@@ -11,6 +11,7 @@ Flow:
   approval_gate → audit_log → final_response → END
 """
 
+from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from graph.consts import (
@@ -88,7 +89,7 @@ def _route_after_groundedness(state: GraphState) -> str:
 # ---------------------------------------------------------------------------
 
 
-def build_graph() -> StateGraph:
+def build_graph(checkpointer=None):
     """Build and compile the support copilot graph."""
     graph = StateGraph(GraphState)
 
@@ -146,8 +147,7 @@ def build_graph() -> StateGraph:
     graph.add_edge(AUDIT_LOG, FINAL_RESPONSE)
     graph.add_edge(FINAL_RESPONSE, END)
 
-    return graph.compile()
+    return graph.compile(checkpointer=checkpointer if checkpointer is not None else InMemorySaver())
 
 
-# Module-level singleton
-app = build_graph()
+# Callers own graph/checkpointer lifetime and supply a unique thread_id.
